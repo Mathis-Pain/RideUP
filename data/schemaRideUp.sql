@@ -2,23 +2,12 @@ CREATE TABLE users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE NOT NULL,
   email TEXT UNIQUE NOT NULL,
-  password_hash TEXT  NOT NULL,
-  profile_pic TEXT,
+  password_hash TEXT NOT NULL,
+  profile_pic TEXT DEFAULT '/static/noprofilpic.png'
+  created_by INT REFERENCES users(id) ON DELETE CASCADE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  latitude DOUBLE PRECISION,
-  longitude DOUBLE PRECISION,
-  search_radius_km DOUBLE PRECISION DEFAULT 50
-);
-
-CREATE TABLE events (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  title TEXT NOT NULL,
-  description TEXT NOT NULL,
-  date TIMESTAMP NOT NULL,
-  created_by INT REFERENCE user(id) ON DELETE CASCADE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  lagitude DOUBLE PRECISION NOT NULL,
-  longitude DOUBLE PRECISION NOT NULL,
+  latitude DOUBLE PRECISION NOT NULL,
+  longitude DOUBLE PRECISION NOT NULL
 );
 
 CREATE TABLE event_participants (
@@ -26,18 +15,18 @@ CREATE TABLE event_participants (
   event_id INT REFERENCES events(id) ON DELETE CASCADE,
   user_id INT REFERENCES users(id) ON DELETE CASCADE,
   joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(event_id, user_id)
-  FOREIGN KEY(user_id)REFERENCES user(id)
+  UNIQUE(event_id, user_id),
+  FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
 CREATE TABLE sessions (
-  id UUID PRIMARY KEY,
-  user_id REFERENCES user(id) ON DELETE CASCADE,
+  id TEXT PRIMARY KEY,
+  user_id INT REFERENCES users(id) ON DELETE CASCADE,
   expire_at TIMESTAMP NOT NULL
 );
 
 CREATE TABLE messages (
-  id INT PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   event_id INT REFERENCES events(id) ON DELETE CASCADE,
   user_id INT REFERENCES users(id) ON DELETE CASCADE,
   content TEXT NOT NULL,
@@ -45,9 +34,9 @@ CREATE TABLE messages (
 );
 
 CREATE TABLE notifications (
-  id INT PRIMARY KEY AUTOINCREMENT;
-  user_id INT NOT NULL REFERENCES user(id) ON DELETE CASCADE,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   message TEXT NOT NULL,
   is_read BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
- );
+);

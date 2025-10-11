@@ -2,15 +2,40 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" href="static/logo.ico" type="image/x-icon" />
     <link rel="stylesheet" href="/static/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=BBH+Sans+Bartle&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=BBH+Sans+Bartle&family=Comic+Relief:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
     <title>RideUp</title>
   </head>
   <body>
-    <h1>RideUp</h1>
-    <img src="chemin/vers/image.jpg" alt="description de l'image" />
-    <p>Descriptif</p>
-    <button>Connexion</button>
-    <button>Crée un compte</button>
+    <main class="main-home">
+      <h1 class="app-title">Ride Up</h1>
+      <img
+        src="static/logo.png"
+        class="logo-image"
+        alt="moto sur une route avec un fond orange"
+      />
+      <p>
+        Cette application vous permet de créer et rejoindre des balades à moto
+        pour profiter de chaque route en toute sécurité et vivre de nouvelles
+        expériences avec d’autres passionnés.
+      </p>
+
+      <button type="input" action="/Connexion" class="button">Connexion</button>
+      <a href="/CeateAccount" class="register"> Crée un compte </a>
+    </main>
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2025 Pain Mathis. Tous droits réservés.</p>
+    </footer>
   </body>
 </html>

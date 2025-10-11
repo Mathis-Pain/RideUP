@@ -1,0 +1,184 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  border: none;
+  background: none;
+  outline: none;
+}
+:root {
+  /*  couleur de fond  */
+  /* Couleurs d'écriture */
+  /* Bordures et éléments en évidence */
+  /* police d'ecriture */
+  --font-title: "BBH Sans Bartle", sans-serif;
+  --font-text: "Comic Relief", sans-serif;
+  --grey: #284655;
+  --orange: #cc5500;
+}
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 100vh;
+}
+.main-home {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  font-family: var(--font-text);
+}
+.app-title,
+.error-title {
+  font-size: 4rem;
+  font-weight: 900;
+  font-family: "Arial Black", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  /* Dégradé diagonal orange foncé / noir */
+  background: linear-gradient(135deg, var(--orange) 50%, var(--grey) 50%);
+  /* Appliquer le dégradé au texte */
+  -webkit-background-clip: text; /* Safari, Chrome */
+  -webkit-text-fill-color: transparent;
+  background-clip: text; /* standard, Firefox et autres */
+  color: transparent; /* fallback si needed */
+}
+
+.logo-image {
+  width: 35%; /* prend 80% de la largeur du conteneur parent */
+  height: auto; /* conserve le ratio original de l'image */
+  display: block; /* pour éviter les petits espaces sous l'image */
+  margin: 0 auto; /* centrer l'image horizontalement */
+}
+
+.button {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-family: "Arial Black", sans-serif;
+  text-transform: uppercase;
+  padding: 12px 30px;
+  border: 2px solid #cc5500; /* orange foncé */
+  border-radius: 10px;
+  background: linear-gradient(135deg, #cc5500 50%, var(--grey) 50%);
+  color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 2px 4px 8px var(--grey);
+}
+.register {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-family: var(--font-text);
+  display: inline-block;
+  padding-bottom: 4px; /* espace pour le soulignement */
+  border-bottom: 4px solid; /* épaisseur du soulignement */
+  border-image: linear-gradient(to right, #cc5500 50%, var(--grey) 50%) 1;
+}
+
+#rallback {
+  font-family: var(--font-text);
+  display: inline-block;
+  padding-bottom: 4px; /* espace pour le soulignement */
+  border-bottom: 4px solid; /* épaisseur du soulignement */
+  border-image: linear-gradient(to right, #cc5500 50%, var(--grey) 50%) 1;
+}
+
+/* Effet au survol */
+.button:hover {
+  transform: scale(1.05);
+  box-shadow: 4px 6px 12px var(--grey);
+  border-color: #ff6600; /* léger éclaircissement de l’orange */
+}
+p {
+  font-family: var(--font-text);
+  text-align: center; /* centre le texte sur chaque ligne */
+  margin: 0 auto; /* centre le bloc lui-même */
+  width: 80%; /* limite la largeur du paragraphe */
+  line-height: 1.6; /* espace entre les lignes pour lisibilité */
+}
+/* Footer */
+footer {
+  margin-top: 10px;
+  margin-bottom: 0;
+  width: 100vw;
+}
+footer p {
+  background: var(--grey);
+  color: white;
+  width: 100%; /* ✅ occupe toute la largeur du conteneur */
+  text-align: center; /* centre le texte si tu veux */
+}
+/********* Page du formulaire d'inscription *********/
+.main-registration {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--font-text);
+}
+#registerForm {
+  display: flex;
+  flex-direction: column;
+}
+.form-group {
+  margin-bottom: 20px;
+}
+.form-label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  font-family: var(--font-text);
+  padding-bottom: 4px; /* espace pour le soulignement */
+  border-bottom: 4px solid; /* épaisseur du soulignement */
+  border-image: linear-gradient(to right, #cc5500 50%, var(--grey) 50%) 1;
+}
+
+/* pour le groupe checkbox + texte */
+.show-password {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* petit espace entre la case et le texte */
+  margin-top: 5px;
+}
+
+/* le texte "Afficher" reste inline */
+.show-password-text {
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+input {
+  border: 2px solid #cc5500;
+  box-shadow: 2px 4px 8px var(--grey);
+  border-radius: 10px;
+  cursor: pointer;
+}
+input::placeholder,
+#registerPassword,
+#confirmPassword {
+  text-align: center;
+}

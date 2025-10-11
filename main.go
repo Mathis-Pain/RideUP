@@ -22,8 +22,8 @@ func main() {
 	mux := routes.InitRoutes()
 
 	// Demarrage du serveur
-	fmt.Println("serveur démarré sur http://localhost:5080...")
-	if err := http.ListenAndServe(":5080", mux); err != nil {
+	fmt.Println("serveur démarré sur http://localhost:5090...")
+	if err := http.ListenAndServe(":5090", mux); err != nil {
 		log.Fatal("Erreur serveur:", err)
 	}
 
