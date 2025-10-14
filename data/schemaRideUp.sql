@@ -3,11 +3,12 @@ CREATE TABLE users (
   username TEXT UNIQUE NOT NULL,
   email TEXT UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
-  profile_pic TEXT DEFAULT '/static/noprofilpic.png'
+  profile_pic TEXT DEFAULT '/static/noprofilpic.png',
   created_by INT REFERENCES users(id) ON DELETE CASCADE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  latitude DOUBLE PRECISION NOT NULL,
-  longitude DOUBLE PRECISION NOT NULL
+  latitude DOUBLE PRECISION DEFAULT 49.43839,
+  longitude DOUBLE PRECISION DEFAULT 1.10160,
+   role_id INTEGER NOT NULL DEFAULT 3
 );
 
 CREATE TABLE event_participants (
