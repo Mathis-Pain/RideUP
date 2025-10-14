@@ -1,12 +1,11 @@
 package sessions
 
 import (
+	"RideUP/models"
 	"crypto/rand"
 	"database/sql"
 	"encoding/base64"
 	"time"
-
-	"github.com/Mathis-Pain/RideUp/models"
 )
 
 // GenerateSessionID génère un ID de session aléatoire

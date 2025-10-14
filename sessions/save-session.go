@@ -1,10 +1,10 @@
 package sessions
 
 import (
+	"RideUP/models"
 	"database/sql"
 	"encoding/json"
-
-	"github.com/Mathis-Pain/RideUp/models"
+	"log"
 )
 
 // chemin d'acces a la db
@@ -35,5 +35,18 @@ func SaveSessionToDB(session models.Session) error {
 	}
 	defer db.Close()
 
-	return SaveSession(db, session)
+	// Vérifie la connexion tout de suite
+	if err := db.Ping(); err != nil {
+		return err
+	}
+
+	// Sauvegarde la session
+	err = SaveSession(db, session)
+	if err != nil {
+		log.Printf("❌ ERREUR : sauvegarde session échouée : %v", err)
+		return err
+	}
+
+	log.Printf("✅ Session %s sauvegardée pour l'utilisateur %d", session.ID, session.UserID)
+	return nil
 }

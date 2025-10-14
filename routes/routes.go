@@ -21,6 +21,7 @@ func InitRoutes() *http.ServeMux {
 	})
 	mux.HandleFunc("/CreateAccount", handlers.RegisterHandler)
 	mux.HandleFunc("/Connect", handlers.ConnectHandler)
+	mux.HandleFunc("/RideUp", handlers.RideUpHandler)
 	// servir les fichiers static
 	fs := http.FileServer(http.Dir("static"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))

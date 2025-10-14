@@ -20,11 +20,6 @@ CREATE TABLE event_participants (
   FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
-CREATE TABLE sessions (
-  id TEXT PRIMARY KEY,
-  user_id INT REFERENCES users(id) ON DELETE CASCADE,
-  expire_at TIMESTAMP NOT NULL
-);
 
 CREATE TABLE messages (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,7 +36,7 @@ CREATE TABLE notifications (
   is_read BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
--- Table sessions
+
 CREATE TABLE sessions (
     id TEXT PRIMARY KEY,          -- Identifiant unique de la session
     user_id INTEGER,             -- ID de l'utilisateur associé

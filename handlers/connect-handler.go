@@ -53,34 +53,24 @@ func ConnectHandler(w http.ResponseWriter, r *http.Request) {
 			if strings.Contains(loginErr.Error(), "db") {
 				// En cas d'erreur dans la base de données
 				utils.InternalServError(w)
-			} else {
-				// En cas d'erreur qui ne vient pas de la base de données
-				// Création d'une session temporaire et anonyme
-				err := InitSession(w, 0, "LoginErr", loginErr.Error())
-				if err != nil {
-					utils.InternalServError(w)
-					return
-				}
-
-				// Redirection vers la page d'origine
-				http.Redirect(w, r, referer, http.StatusSeeOther)
-				return
 			}
+			// Mauvais identifiant / mot de passe → on ne crée pas de vraie session
+			http.Redirect(w, r, referer+"?error="+loginErr.Error(), http.StatusSeeOther)
+			return
 		}
-		//Invalider toutes les sessions existantes
+
+		// Ici, tout est ok → créer la vraie session
 		if err := sessions.InvalidateUserSessions(user.ID); err != nil {
 			utils.InternalServError(w)
 			return
 		}
-
-		err = InitSession(w, user.ID, "user", user.Username)
-		if err != nil {
+		if err := InitSession(w, user.ID, "user", user.Email); err != nil {
 			utils.InternalServError(w)
 			return
 		}
 
-		http.Redirect(w, r, referer, http.StatusSeeOther)
-
+		http.Redirect(w, r, "/RideUp", http.StatusSeeOther)
+		return
 	}
 }
 

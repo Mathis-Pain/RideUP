@@ -11,17 +11,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func Authentification(db *sql.DB, username string, password string) (models.User, error) {
-	if username == "" || password == "" {
+func Authentification(db *sql.DB, email string, password string) (models.User, error) {
+	if email == "" || password == "" {
 		mylog := fmt.Errorf("tous les champs sont requis")
 		log.Println("Erreur : <authentification.go>", mylog)
 		return models.User{}, mylog
 	}
 	// Récupère l'ID et le mot de passe (crypté) à partir de l'identifiant
-	user, err := getdata.GetUserFromLogin(db, username)
+	user, err := getdata.GetUserFromLogin(db, email)
 	if errors.Is(err, sql.ErrNoRows) {
 		// Si aucun utilisateur n'est trouvé avec cet identifiant (mail ou pseudo), renvoie une erreur
-		log.Printf("ERREUR : <authentification.go> Tentative de connexion échouée : L'utilisateur %s n'existe pas.\n", username)
+		log.Printf("ERREUR : <authentification.go> Tentative de connexion échouée : L'utilisateur %s n'existe pas.\n", email)
 		return models.User{}, fmt.Errorf("nom d'utilisateur incorrect")
 	} else if err != nil {
 		// Erreur dans la base de données

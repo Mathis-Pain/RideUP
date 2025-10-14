@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Mathis-Pain/RideUp/models"
+	"RideUP/models"
 )
 
 // GetSession récupère une session depuis la DB
