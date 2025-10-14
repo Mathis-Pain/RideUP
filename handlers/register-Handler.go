@@ -48,18 +48,12 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		password := r.FormValue("password")
 		passwordConfirm := r.FormValue("confirmpassword")
 
-		log.Printf("DEBUG - Formulaire reçu: username='%s', email='%s', pass_len=%d, confirm_len=%d",
-			username, email, len(password), len(passwordConfirm))
-
 		// Validation des données
 		formData := models.RegisterDataError{
 			NameError:  utils.ValidName(username),
 			EmailError: utils.ValidEmail(email),
 			PassError:  utils.ValidPassword(password, passwordConfirm),
 		}
-
-		log.Printf("DEBUG - Erreurs validation: Name='%s', Email='%s', Pass='%s'",
-			formData.NameError, formData.EmailError, formData.PassError)
 
 		data := struct {
 			LoginErr     string

@@ -6,3 +6,11 @@ type RegisterDataError struct {
 	EmailError string
 	PassError  string
 }
+type User struct {
+	ID        int
+	Username  string
+	Password  string
+	Email     string
+	ProfilPic string
+	Status    string
+}

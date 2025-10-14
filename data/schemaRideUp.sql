@@ -41,3 +41,11 @@ CREATE TABLE notifications (
   is_read BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+-- Table sessions
+CREATE TABLE sessions (
+    id TEXT PRIMARY KEY,          -- Identifiant unique de la session
+    user_id INTEGER,             -- ID de l'utilisateur associé
+    data TEXT,                    -- Données de session sérialisées en JSON
+    expires_at TIMESTAMP,         -- Date d'expiration de la session
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Date de création
+);
