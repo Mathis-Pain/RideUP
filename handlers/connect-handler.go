@@ -10,13 +10,21 @@ import (
 	"strings"
 )
 
-var ConnectionHtml = template.Must(template.ParseFiles("templates/connection.html"))
+var ConnectionHtml = template.Must(template.ParseFiles("templates/connection.html", "templates/inithtml/inithead.html", "templates/inithtml/initfooter.html"))
 
 func ConnectHandler(w http.ResponseWriter, r *http.Request) {
 	referer := r.Header.Get("Referer")
 	if referer == "" {
 		referer = "/"
 	}
+	// Vérifier si la session est active
+	sessionCookie, err := r.Cookie("session_id")
+	if err == nil && sessions.IsValidSession(sessionCookie.Value) {
+		// Si la session est valide, rediriger vers RideUp
+		http.Redirect(w, r, "/RideUp", http.StatusSeeOther)
+		return
+	}
+
 	// Gestion de la methode GET
 	if r.Method == "GET" {
 		if err := ConnectionHtml.Execute(w, nil); err != nil {

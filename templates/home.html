@@ -1,23 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" href="static/logo.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="/static/style.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="/static/script.js" defer></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=BBH+Sans+Bartle&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=BBH+Sans+Bartle&family=Comic+Relief:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-
-    <title>RideUp</title>
-  </head>
-  <body>
+  {{template "InitHead" .}}
+  <body class="body-home">
     <main class="main-home">
       <h1 class="app-title">Ride Up</h1>
       <img
@@ -36,8 +20,6 @@
       <a href="/CreateAccount" class="register"> Crée un compte </a>
     </main>
     <!-- Footer -->
-    <footer>
-      <p>&copy; 2025 Pain Mathis. Tous droits réservés.</p>
-    </footer>
+    {{template "InitFooter" .}}
   </body>
 </html>

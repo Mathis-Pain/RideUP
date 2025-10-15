@@ -12,7 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var RegistrationHtml = template.Must(template.ParseFiles("templates/registration.html"))
+var RegistrationHtml = template.Must(template.ParseFiles("templates/registration.html", "templates/inithtml/inithead.html", "templates/inithtml/initfooter.html"))
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	// Gestion de la méthode GET

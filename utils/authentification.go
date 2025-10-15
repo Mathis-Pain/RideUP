@@ -17,7 +17,7 @@ func Authentification(db *sql.DB, email string, password string) (models.User, e
 		log.Println("Erreur : <authentification.go>", mylog)
 		return models.User{}, mylog
 	}
-	// Récupère l'ID et le mot de passe (crypté) à partir de l'identifiant
+	// Récupère l'Email et le mot de passe (crypté) à partir de l'identifiant
 	user, err := getdata.GetUserFromLogin(db, email)
 	if errors.Is(err, sql.ErrNoRows) {
 		// Si aucun utilisateur n'est trouvé avec cet identifiant (mail ou pseudo), renvoie une erreur

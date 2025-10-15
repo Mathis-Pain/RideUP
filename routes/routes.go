@@ -2,6 +2,7 @@ package routes
 
 import (
 	"RideUP/handlers"
+	"RideUP/middleware"
 	"RideUP/utils"
 	"net/http"
 )
@@ -21,7 +22,9 @@ func InitRoutes() *http.ServeMux {
 	})
 	mux.HandleFunc("/CreateAccount", handlers.RegisterHandler)
 	mux.HandleFunc("/Connect", handlers.ConnectHandler)
-	mux.HandleFunc("/RideUp", handlers.RideUpHandler)
+	mux.HandleFunc("/Disconnect", handlers.DisconnectHandler)
+	mux.Handle("/RideUp", middleware.AuthMiddleware(http.HandlerFunc(handlers.RideUpHandler)))
+	mux.Handle("/NewRide", middleware.AuthMiddleware(http.HandlerFunc(handlers.NewRideHandler)))
 	// servir les fichiers static
 	fs := http.FileServer(http.Dir("static"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))

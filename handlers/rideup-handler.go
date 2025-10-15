@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-var RideUpHtml = template.Must(template.ParseFiles("templates/rideup.html"))
+var RideUpHtml = template.Must(template.ParseFiles("templates/rideup.html", "templates/inithtml/inithead.html", "templates/inithtml/initnav.html", "templates/inithtml/initfooter.html"))
 
 func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	err := RideUpHtml.Execute(w, nil)

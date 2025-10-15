@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-var HomeHtml = template.Must(template.ParseFiles("templates/home.html"))
+var HomeHtml = template.Must(template.ParseFiles("templates/home.html", "templates/inithtml/inithead.html", "templates/inithtml/initfooter.html"))
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	err := HomeHtml.Execute(w, nil)
