@@ -16,4 +16,9 @@ type Event struct {
 	StartDatetime   time.Time      `db:"start_datetime"`
 	EndDatetime     sql.NullTime   `db:"end_datetime"`     // 👈 si peut être NULL
 	MaxParticipants sql.NullInt64  `db:"max_participants"` // 👈 si peut être NULL
+	Location        *SimpleAddress
+}
+
+func (e Event) FormattedStart() string {
+	return e.StartDatetime.Format("15:04 02/01/2006")
 }

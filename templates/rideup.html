@@ -7,13 +7,18 @@
     <main class="main-rideup">
       <!-- Colonne gauche : sorties de l'utilisateur -->
       <section class="user-events">
-        <h2>🧭 Mes sorties</h2>
+        <h2>Mes sorties</h2>
         <div class="cards-container">
           {{range .UserEvents}}
           <div class="card">
             <h3>{{.Title}}</h3>
-            <p><strong>Horaire :</strong>{{.StartDatetime}}</p>
-            <p><strong>Lieu :</strong> {{.Latitude}}, {{.Longitude}}</p>
+
+            <p><strong>Horaire :</strong>{{.FormattedStart}}</p>
+            <p>
+              <strong>Lieu :</strong>
+              {{with .Location}} {{.Rue}} {{.CodePostal}} {{.Ville}} {{.Pays}}
+              {{else}} Coordonnées: {{.Latitude}}, {{.Longitude}} {{end}}
+            </p>
             {{if .Description.Valid}}
             <p>{{.Description.String}}</p>
             {{end}}
@@ -26,17 +31,22 @@
 
       <!-- Colonne droite : sorties disponibles -->
       <section class="available-events">
-        <h2>🚴 Sorties disponibles</h2>
+        <h2>Sorties disponibles</h2>
         <div class="cards-container">
           {{range .AvailableEvents}}
           <div class="card">
             <h3>{{.Title}}</h3>
-            <p><strong>Horaire :</strong>{{.StartDatetime}}</p>
-            <p><strong>Lieu :</strong> {{.Latitude}}, {{.Longitude}}</p>
+            <p><strong>Horaire :</strong>{{.FormattedStart}}</p>
+            <p>
+              <strong>Lieu :</strong>
+              {{if .Location}} {{.Location.Rue}}, {{.Location.Ville}},
+              {{.Location.CodePostal}}, {{.Location.Pays}} {{else}} Coordonnées
+              : {{.Latitude}}, {{.Longitude}} {{end}}
+            </p>
             {{if .Description.Valid}}
             <p>{{.Description.String}}</p>
             {{end}}
-            <button class="join-btn">Rejoindre</button>
+            <button class="button">Rejoindre</button>
           </div>
           {{else}}
           <p>Aucune sortie disponible actuellement.</p>

@@ -60,6 +60,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //#region Fonctions utilitaires
   // afficher ou cacher le mdp
+  function togglePassword(inputId, checkbox) {
+    const input = document.getElementById(inputId);
+    input.type = checkbox.checked ? "text" : "password";
+  }
+  // afficher la position lat long en adresse
+  L.Control.Geocoder.nominatim().reverse(
+    L.latLng(lat, lon),
+    18, // plus précis
+    function (results) {
+      if (results && results.length > 0) {
+        const address = results[0].name;
+        console.log("Adresse :", address);
+
+        // Ici tu peux l'afficher dans ton input du formulaire
+        document.getElementById("eventLocation").value = address;
+      } else {
+        console.log("Aucune adresse trouvée pour ces coordonnées.");
+      }
+    }
+  );
 
   //#endregion
 });
