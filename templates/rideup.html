@@ -12,7 +12,7 @@
           {{range .UserEvents}}
           <div class="card">
             <h3>{{.Title}}</h3>
-
+            <p><strong>Horaire :</strong>{{.StartDatetime}}</p>
             <p><strong>Lieu :</strong> {{.Latitude}}, {{.Longitude}}</p>
             {{if .Description.Valid}}
             <p>{{.Description.String}}</p>
@@ -31,7 +31,7 @@
           {{range .AvailableEvents}}
           <div class="card">
             <h3>{{.Title}}</h3>
-
+            <p><strong>Horaire :</strong>{{.StartDatetime}}</p>
             <p><strong>Lieu :</strong> {{.Latitude}}, {{.Longitude}}</p>
             {{if .Description.Valid}}
             <p>{{.Description.String}}</p>

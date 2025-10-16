@@ -70,7 +70,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	// -----------------------------
 	// 🔹 Sorties créées par d'autres utilisateurs
 	// -----------------------------
-	rows2, err := db.Query("SELECT id, title, description, created_by, created_at, latitude, longitude, start_datetime, end_datetime, max_participants FROM events WHERE created_by != ?", userID)
+	rows2, err := db.Query("SELECT id, title, description, created_by, created_at, latitude, longitude, start_datetime, end_datetime, max_participants FROM events ", userID)
 	if err != nil {
 		log.Println("Erreur SELECT availableEvents:", err)
 	}
