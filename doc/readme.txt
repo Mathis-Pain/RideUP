@@ -17,3 +17,11 @@ Que tu sois amateur de virées tranquilles ou adepte de routes sinueuses, RideUp
 🔒 Système de connexion et sessions sécurisées : inscription, authentification et gestion des utilisateurs.
 
 💬 Espace communautaire (à venir) : échanges entre motards, commentaires et photos des sorties.
+
+💡💡 Possibilité de l'adapter à d'autres milieux comme gestionnaire d'événements sur d'autres sports ou activités culturelles.
+💡💡 Possible d'usage également dans les clubs sport ou autres
+
+
+
+
+‼️ voir les modalitées d'utilisation de map en cas de mise en prod

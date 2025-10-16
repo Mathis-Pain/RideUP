@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  {{template "InitHead" .}}
+  <body class="body-newevent">
+    {{template "InitNav" .}}
+    <main class="main-newevent">
+      <form action="/NewEvent" method="POST" class="form-newevent">
+        <!-- Paramètres sur la même ligne -->
+        <div class="params-newevent">
+          <div class="param">
+            <label for="eventTitle">Titre :</label>
+            <input
+              type="text"
+              id="eventTitle"
+              name="title"
+              required
+              placeholder="Ballade"
+            />
+          </div>
+          <div class="param">
+            <label for="eventDate">Date :</label>
+            <input type="date" id="eventDate" name="date" required />
+          </div>
+          <div class="param">
+            <label for="eventTime">Heure de départ :</label>
+            <input type="time" id="eventTime" name="time" required />
+          </div>
+        </div>
+
+        <!-- Lieu en dessous -->
+        <div class="form-group">
+          <label for="eventLocation">Lieu de départ:</label>
+          <input
+            type="text"
+            id="eventLocation"
+            name="location"
+            placeholder="Choisi sur la carte"
+          />
+        </div>
+
+        <!-- Carte -->
+        <div id="map" data-lat="{{.Latitude}}" data-lon="{{.Longitude}}"></div>
+
+        <!-- Bouton -->
+        <button type="submit" class="button">Créer l'événement</button>
+      </form>
+    </main>
+
+    {{template "InitFooter" .}}
+  </body>
+</html>

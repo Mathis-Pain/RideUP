@@ -24,7 +24,7 @@ func InitRoutes() *http.ServeMux {
 	mux.HandleFunc("/Connect", handlers.ConnectHandler)
 	mux.HandleFunc("/Disconnect", handlers.DisconnectHandler)
 	mux.Handle("/RideUp", middleware.AuthMiddleware(http.HandlerFunc(handlers.RideUpHandler)))
-	mux.Handle("/NewRide", middleware.AuthMiddleware(http.HandlerFunc(handlers.NewRideHandler)))
+	mux.Handle("/NewEvent", middleware.AuthMiddleware(http.HandlerFunc(handlers.NewEventHandler)))
 	// servir les fichiers static
 	fs := http.FileServer(http.Dir("static"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))

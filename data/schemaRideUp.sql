@@ -38,9 +38,21 @@ CREATE TABLE notifications (
 );
 
 CREATE TABLE sessions (
-    id TEXT PRIMARY KEY,          -- Identifiant unique de la session
-    user_id INTEGER,             -- ID de l'utilisateur associé
+    id TEXT PRIMARY KEY,
+    user_id INTEGER,
     data TEXT,                    -- Données de session sérialisées en JSON
-    expires_at TIMESTAMP,         -- Date d'expiration de la session
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Date de création
+    expires_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    description TEXT,
+    created_by INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    latitude DOUBLE PRECISION NOT NULL,      
+    longitude DOUBLE PRECISION NOT NULL,
+    start_datetime TIMESTAMP NOT NULL,       
+    end_datetime TIMESTAMP,                  
+    max_participants INTEGER DEFAULT NULL   
 );
