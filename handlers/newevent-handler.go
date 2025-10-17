@@ -71,7 +71,7 @@ func NewEventHandler(w http.ResponseWriter, r *http.Request) {
 		_, err = fmt.Sscanf(location, "Lat: %f, Lon: %f", &lat, &lon)
 		if err != nil {
 			log.Printf("ERREUR : parsing location: %v", err)
-			http.Error(w, "Coordonnées invalides", http.StatusBadRequest)
+			http.Redirect(w, r, "/NewEvent", http.StatusSeeOther)
 			return
 		}
 		session, err := sessions.GetSessionFromRequest(r)
