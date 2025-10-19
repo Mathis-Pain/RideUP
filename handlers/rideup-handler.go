@@ -42,7 +42,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	// -----------------------------
 	userRows, err := db.Query(`
 		SELECT id, title, description, created_by, created_at, 
-		       latitude, longitude, address, start_datetime, end_datetime, max_participants
+		       latitude, longitude, address, start_datetime, end_datetime, participants
 		FROM events
 		WHERE created_by = ?`, userID)
 	if err != nil {
@@ -66,7 +66,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 			&e.Address,
 			&e.StartDatetime,
 			&e.EndDatetime,
-			&e.MaxParticipants,
+			&e.Participants,
 		); err != nil {
 			log.Println("Erreur Scan userEvents:", err)
 			continue
@@ -79,7 +79,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	// -----------------------------
 	allRows, err := db.Query(`
 		SELECT id, title, description, created_by, created_at, 
-		       latitude, longitude, address, start_datetime, end_datetime, max_participants
+		       latitude, longitude, address, start_datetime, end_datetime, participants
 		FROM events`)
 	if err != nil {
 		log.Println("Erreur SELECT availableEvents:", err)
@@ -102,7 +102,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 			&e.Address,
 			&e.StartDatetime,
 			&e.EndDatetime,
-			&e.MaxParticipants,
+			&e.Participants,
 		); err != nil {
 			log.Println("Erreur Scan availableEvents:", err)
 			continue
