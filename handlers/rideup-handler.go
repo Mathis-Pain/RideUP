@@ -13,7 +13,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var RideUpHtml = template.Must(template.ParseFiles(
+var EventHtml = template.Must(template.ParseFiles(
 	"templates/rideup.html",
 	"templates/inithtml/inithead.html",
 	"templates/inithtml/initnav.html",
@@ -111,7 +111,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	// 🔹 Conversion latitude/longitude → adresse
 	// -----------------------------
 	for i := range userEvents {
-		address, err := utils.ReverseGeocodeSimple(userEvents[i].Latitude, userEvents[i].Longitude)
+		address, err := utils.ReverseGeocodeString(userEvents[i].Latitude, userEvents[i].Longitude)
 		if err != nil || address == nil {
 			// Si erreur, créer une adresse avec les coordonnées
 			userEvents[i].Location = &models.SimpleAddress{
@@ -124,7 +124,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for i := range availableEvents {
-		address, err := utils.ReverseGeocodeSimple(availableEvents[i].Latitude, availableEvents[i].Longitude)
+		address, err := utils.ReverseGeocodeString(availableEvents[i].Latitude, availableEvents[i].Longitude)
 		if err != nil || address == nil {
 			// Si erreur, créer une adresse avec les coordonnées
 			availableEvents[i].Location = &models.SimpleAddress{
@@ -149,7 +149,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 		AvailableEvents: availableEvents,
 	}
 
-	if err := RideUpHtml.Execute(w, data); err != nil {
+	if err := EventHtml.Execute(w, data); err != nil {
 		log.Printf("Erreur lors de l'exécution du template rideup.html: %v", err)
 		utils.InternalServError(w)
 	}

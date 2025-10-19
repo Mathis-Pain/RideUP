@@ -320,6 +320,15 @@ input {
   align-items: center;
   width: 100%;
 }
+form label {
+  margin-bottom: 0.5rem;
+}
+#address {
+  width: 100%;
+  padding: 0.5rem; /* pour agrandir la zone cliquable */
+  box-sizing: border-box; /* inclut padding dans la largeur */
+  font-size: 1rem; /* pour que le texte soit lisible */
+}
 
 .form-newevent {
   margin-top: 30px;
@@ -377,7 +386,11 @@ input {
 
 .user-events,
 .available-events {
-  flex: 1;
+  flex: 1; /* prend l’espace dispo */
+  max-height: 80vh; /* limite la hauteur */
+  overflow-y: auto; /* active le scroll vertical si besoin */
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
 .cards-container {

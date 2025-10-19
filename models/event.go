@@ -20,5 +20,5 @@ type Event struct {
 }
 
 func (e Event) FormattedStart() string {
-	return e.StartDatetime.Format("15:04 02/01/2006")
+	return e.StartDatetime.Format(" le 02/01/2006 à 15:04")
 }

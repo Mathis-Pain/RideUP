@@ -1,5 +1,5 @@
 package models
 
-type NominatimResponse struct {
+type NominatimResponseText struct {
 	Address NominatimAddress `json:"address"`
 }

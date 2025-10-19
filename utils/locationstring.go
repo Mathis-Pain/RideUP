@@ -7,7 +7,8 @@ import (
 	"net/http"
 )
 
-func ReverseGeocodeSimple(lat, lon float64) (*models.SimpleAddress, error) {
+// Convertie une adresse avec des coordonnées lat long en adresse textuel
+func ReverseGeocodeString(lat, lon float64) (*models.SimpleAddress, error) {
 	url := fmt.Sprintf("https://nominatim.openstreetmap.org/reverse?lat=%f&lon=%f&format=json", lat, lon)
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set("User-Agent", "RideUpApp/1.0")
@@ -19,7 +20,7 @@ func ReverseGeocodeSimple(lat, lon float64) (*models.SimpleAddress, error) {
 	}
 	defer resp.Body.Close()
 
-	var data models.NominatimResponse
+	var data models.NominatimResponseText
 	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
 		return nil, err
 	}

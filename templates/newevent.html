@@ -29,13 +29,18 @@
 
         <!-- Lieu en dessous -->
         <div class="form-group">
-          <label for="eventLocation">Lieu de départ:</label>
+          <label for="eventLocation"
+            >Lieu de départ (ou double clic sur la carte):</label
+          >
           <input
             type="text"
-            id="eventLocation"
-            name="location"
-            placeholder="Choisi sur la carte"
+            id="address"
+            name="address"
+            placeholder="entrer l'adresse"
           />
+
+          <input type="hidden" id="latitude" name="latitude" value="" />
+          <input type="hidden" id="longitude" name="longitude" value="" />
         </div>
 
         <!-- Carte -->
@@ -45,7 +50,9 @@
         <button type="submit" class="button">Créer l'événement</button>
       </form>
     </main>
-
     {{template "InitFooter" .}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <!-- Script spécifique NewEvent -->
+    <script src="/static/js/newevent.js"></script>
   </body>
 </html>

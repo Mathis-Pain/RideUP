@@ -54,5 +54,6 @@ CREATE TABLE events (
     longitude DOUBLE PRECISION NOT NULL,
     start_datetime TIMESTAMP NOT NULL,       
     end_datetime TIMESTAMP,                  
-    max_participants INTEGER DEFAULT NULL   
+    max_participants INTEGER DEFAULT NULL   ,
+    address TEXT
 );
