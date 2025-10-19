@@ -5,7 +5,6 @@ import (
 	"RideUP/sessions"
 	"RideUP/utils"
 	"database/sql"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -42,7 +41,8 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	// 🔹 Sorties créées par l'utilisateur
 	// -----------------------------
 	userRows, err := db.Query(`
-		SELECT id, title, description, created_by, created_at, latitude, longitude, start_datetime, end_datetime, max_participants
+		SELECT id, title, description, created_by, created_at, 
+		       latitude, longitude, address, start_datetime, end_datetime, max_participants
 		FROM events
 		WHERE created_by = ?`, userID)
 	if err != nil {
@@ -63,6 +63,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 			&e.CreatedAt,
 			&e.Latitude,
 			&e.Longitude,
+			&e.Address,
 			&e.StartDatetime,
 			&e.EndDatetime,
 			&e.MaxParticipants,
@@ -77,7 +78,8 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	// 🔹 Toutes les sorties disponibles
 	// -----------------------------
 	allRows, err := db.Query(`
-		SELECT id, title, description, created_by, created_at, latitude, longitude, start_datetime, end_datetime, max_participants
+		SELECT id, title, description, created_by, created_at, 
+		       latitude, longitude, address, start_datetime, end_datetime, max_participants
 		FROM events`)
 	if err != nil {
 		log.Println("Erreur SELECT availableEvents:", err)
@@ -97,6 +99,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 			&e.CreatedAt,
 			&e.Latitude,
 			&e.Longitude,
+			&e.Address,
 			&e.StartDatetime,
 			&e.EndDatetime,
 			&e.MaxParticipants,
@@ -105,35 +108,6 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		availableEvents = append(availableEvents, e)
-	}
-
-	// -----------------------------
-	// 🔹 Conversion latitude/longitude → adresse
-	// -----------------------------
-	for i := range userEvents {
-		address, err := utils.ReverseGeocodeString(userEvents[i].Latitude, userEvents[i].Longitude)
-		if err != nil || address == nil {
-			// Si erreur, créer une adresse avec les coordonnées
-			userEvents[i].Location = &models.SimpleAddress{
-				Rue: fmt.Sprintf("Coordonnées: %.6f, %.6f", userEvents[i].Latitude, userEvents[i].Longitude),
-			}
-		} else {
-			// Assigner directement le pointeur
-			userEvents[i].Location = address
-		}
-	}
-
-	for i := range availableEvents {
-		address, err := utils.ReverseGeocodeString(availableEvents[i].Latitude, availableEvents[i].Longitude)
-		if err != nil || address == nil {
-			// Si erreur, créer une adresse avec les coordonnées
-			availableEvents[i].Location = &models.SimpleAddress{
-				Rue: fmt.Sprintf("Coordonnées: %.6f, %.6f", availableEvents[i].Latitude, availableEvents[i].Longitude),
-			}
-		} else {
-			// Assigner directement le pointeur
-			availableEvents[i].Location = address
-		}
 	}
 
 	// -----------------------------

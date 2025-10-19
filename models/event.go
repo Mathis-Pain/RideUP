@@ -13,6 +13,7 @@ type Event struct {
 	CreatedAt       time.Time      `db:"created_at"`
 	Latitude        float64        `db:"latitude"`
 	Longitude       float64        `db:"longitude"`
+	Address         string         `db:"address"`
 	StartDatetime   time.Time      `db:"start_datetime"`
 	EndDatetime     sql.NullTime   `db:"end_datetime"`     // 👈 si peut être NULL
 	MaxParticipants sql.NullInt64  `db:"max_participants"` // 👈 si peut être NULL

@@ -114,12 +114,23 @@ func NewEventHandler(w http.ResponseWriter, r *http.Request) {
 		title := r.FormValue("title")
 		dateStr := r.FormValue("date")
 		timeStr := r.FormValue("time")
-		address := r.FormValue("address")  // Nouvelle saisie adresse
+		address := r.FormValue("address")  // Adresse (peut être vide si coords directes)
 		latStr := r.FormValue("latitude")  // Champs hidden carte
 		lonStr := r.FormValue("longitude") // Champs hidden carte
 
-		if title == "" || dateStr == "" || timeStr == "" || (address == "" && (latStr == "" || lonStr == "")) {
-			http.Error(w, "Tous les champs sont obligatoires", http.StatusBadRequest)
+		// Debug
+		log.Printf("DEBUG - title: %s", title)
+		log.Printf("DEBUG - address: %s", address)
+		log.Printf("DEBUG - latStr: %s, lonStr: %s", latStr, lonStr)
+
+		if title == "" || dateStr == "" || timeStr == "" {
+			http.Error(w, "Le titre, la date et l'heure sont obligatoires", http.StatusBadRequest)
+			return
+		}
+
+		// Vérifier qu'on a soit une adresse, soit des coordonnées
+		if address == "" && (latStr == "" || lonStr == "") {
+			http.Error(w, "Veuillez saisir une adresse ou sélectionner un point sur la carte", http.StatusBadRequest)
 			return
 		}
 
@@ -132,44 +143,57 @@ func NewEventHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Récupération des coordonnées
+		// Récupération des coordonnées et de l'adresse finale
 		var lat, lon float64
-		if address != "" {
-			// Géocodage adresse
-			lat, lon, err = GeocodeAddress(address)
-			if err != nil {
-				log.Printf("Erreur géocodage : %v", err)
-				http.Error(w, "Adresse introuvable", http.StatusBadRequest)
-				return
-			}
-		} else {
-			// Latitude/Longitude via clic sur carte
+		var finalAddress string
+
+		if latStr != "" && lonStr != "" {
+			// Coordonnées via carte (prioritaire)
 			lat, err = strconv.ParseFloat(latStr, 64)
 			if err != nil {
 				log.Printf("Erreur parsing latitude: %v", err)
-				http.Redirect(w, r, "/NewEvent", http.StatusSeeOther)
+				http.Error(w, "Coordonnées invalides", http.StatusBadRequest)
 				return
 			}
 			lon, err = strconv.ParseFloat(lonStr, 64)
 			if err != nil {
 				log.Printf("Erreur parsing longitude: %v", err)
-				http.Redirect(w, r, "/NewEvent", http.StatusSeeOther)
+				http.Error(w, "Coordonnées invalides", http.StatusBadRequest)
 				return
 			}
+			// Si une adresse est fournie (via géocodage inversé JS), on l'utilise
+			if address != "" {
+				finalAddress = address
+			} else {
+				finalAddress = fmt.Sprintf("Lat: %.6f, Lon: %.6f", lat, lon)
+			}
+
+		} else if address != "" {
+			// Géocodage adresse uniquement si pas de coordonnées
+			lat, lon, err = GeocodeAddress(address)
+			if err != nil {
+				log.Printf("Erreur géocodage : %v", err)
+				http.Error(w, "Adresse introuvable. Veuillez vérifier l'orthographe ou utiliser la carte.", http.StatusBadRequest)
+				return
+			}
+			finalAddress = address
 		}
 
-		// Insertion dans la base de données
+		log.Printf("INFO - Création événement: %s à %s [%.6f, %.6f]", title, finalAddress, lat, lon)
+
+		// Insertion dans la base de données avec l'adresse
 		_, err = db.Exec(`
-			INSERT INTO events (title, created_by, latitude, longitude, start_datetime)
-			VALUES (?, ?, ?, ?, ?)`,
-			title, session.UserID, lat, lon, startDatetime)
+			INSERT INTO events (title, created_by, latitude, longitude, address, start_datetime)
+			VALUES (?, ?, ?, ?, ?, ?)`,
+			title, session.UserID, lat, lon, finalAddress, startDatetime)
 		if err != nil {
 			log.Printf("ERREUR : insertion event: %v", err)
 			http.Error(w, "Impossible de créer l'événement", http.StatusInternalServerError)
 			return
 		}
 
-		http.Redirect(w, r, "/RideUP", http.StatusSeeOther)
+		log.Printf("✅ Événement créé avec succès: %s", title)
+		http.Redirect(w, r, "/RideUp", http.StatusSeeOther)
 		return
 	}
 

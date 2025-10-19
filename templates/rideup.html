@@ -16,8 +16,7 @@
             <p><strong>Horaire :</strong>{{.FormattedStart}}</p>
             <p>
               <strong>Lieu :</strong>
-              {{with .Location}} {{.Rue}} {{.CodePostal}} {{.Ville}} {{.Pays}}
-              {{else}} Coordonnées: {{.Latitude}}, {{.Longitude}} {{end}}
+              {{.Address}}
             </p>
             {{if .Description.Valid}}
             <p>{{.Description.String}}</p>
@@ -39,9 +38,7 @@
             <p><strong>Date :</strong>{{.FormattedStart}}</p>
             <p>
               <strong>Lieu :</strong>
-              {{if .Location}} {{.Location.Rue}}, {{.Location.Ville}},
-              {{.Location.CodePostal}}, {{.Location.Pays}} {{else}} Coordonnées
-              : {{.Latitude}}, {{.Longitude}} {{end}}
+              {{.Address}}
             </p>
             {{if .Description.Valid}}
             <p>{{.Description.String}}</p>
