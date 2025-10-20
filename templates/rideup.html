@@ -21,6 +21,14 @@
             {{if .Description.Valid}}
             <p>{{.Description.String}}</p>
             {{end}}
+            <span class="user-participants">
+              <img
+                src="/static/icone-participant.png"
+                class="image-participants"
+                alt="petit icone pour symboliser les participants"
+              />
+              {{if .Participants.Valid}}{{.Participants.Int64}}{{else}}0{{end}}
+            </span>
           </div>
           {{else}}
           <p>Aucune sortie créée pour le moment.</p>
@@ -43,7 +51,20 @@
             {{if .Description.Valid}}
             <p>{{.Description.String}}</p>
             {{end}}
-            <button class="button">Rejoindre</button>
+            <div class="btn-participants">
+              <button class="join-btn" data-event-id="{{.ID}}">
+                {{if .UserJoined}}Annuler{{else}}Rejoindre{{end}}
+              </button>
+              <span class="participants">
+                <img
+                  src="/static/icone-participant.png"
+                  class="image-participants"
+                  alt="petit icone pour symboliser les participants"
+                />
+                {{if
+                .Participants.Valid}}{{.Participants.Int64}}{{else}}0{{end}}
+              </span>
+            </div>
           </div>
           {{else}}
           <p>Aucune sortie disponible actuellement.</p>

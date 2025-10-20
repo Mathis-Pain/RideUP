@@ -71,6 +71,17 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("Erreur Scan userEvents:", err)
 			continue
 		}
+
+		// 🔍 Vérifie si l'utilisateur a rejoint cet event
+		var count int
+		err = db.QueryRow(`SELECT COUNT(*) FROM event_participants WHERE user_id = ? AND event_id = ?`,
+			userID, e.ID).Scan(&count)
+		if err == nil && count > 0 {
+			e.UserJoined = true
+		} else {
+			e.UserJoined = false
+		}
+
 		userEvents = append(userEvents, e)
 	}
 
@@ -107,6 +118,17 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("Erreur Scan availableEvents:", err)
 			continue
 		}
+
+		// 🔍 Vérifie si l'utilisateur a rejoint cet event
+		var count int
+		err = db.QueryRow(`SELECT COUNT(*) FROM event_participants WHERE user_id = ? AND event_id = ?`,
+			userID, e.ID).Scan(&count)
+		if err == nil && count > 0 {
+			e.UserJoined = true
+		} else {
+			e.UserJoined = false
+		}
+
 		availableEvents = append(availableEvents, e)
 	}
 

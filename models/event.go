@@ -18,6 +18,7 @@ type Event struct {
 	EndDatetime   sql.NullTime   `db:"end_datetime"` // 👈 si peut être NULL
 	Participants  sql.NullInt64  `db:"participants"` // 👈 si peut être NULL
 	Location      *SimpleAddress
+	UserJoined    bool
 }
 
 func (e Event) FormattedStart() string {
