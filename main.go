@@ -4,6 +4,7 @@ import (
 	builddb "RideUP/buildDB"
 	"RideUP/routes"
 	"RideUP/sessions"
+	"RideUP/utils/authextern"
 	"fmt"
 	"log"
 	"net/http"
@@ -19,7 +20,8 @@ func main() {
 	}
 	defer db.Close()
 	fmt.Println("Projet lancé, DB prête a l'emploi")
-
+	// Identification google
+	authextern.InitGoogleOAuth()
 	// Nettoyage des sessions expirées toutes les 5 minutes
 	go func() {
 		for {

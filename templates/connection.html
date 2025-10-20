@@ -36,9 +36,16 @@
             <span class="show-password-text">Afficher</span>
           </div>
         </div>
-
         <button value="submit" class="button">Connexion</button>
       </form>
+      <div id="external-connect" class="button">
+        <a href="/auth/google/login">
+          <button type="button" class="form-button">
+            <img src="/static/images/google.png" alt="Connexion avec Google" />
+            S'identifier avec Google
+          </button>
+        </a>
+      </div>
     </main>
     {{template "InitFooter" .}}
   </body>

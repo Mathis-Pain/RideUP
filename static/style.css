@@ -212,6 +212,17 @@ input {
   text-align: center; /* si tu veux centrer le texte */
 }
 /********* Page de connexion *********/
+/* Bouton connexion */
+.form-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.form-button img {
+  height: 20px;
+  margin-right: 10px;
+}
 
 .main-connection {
   flex: 1;

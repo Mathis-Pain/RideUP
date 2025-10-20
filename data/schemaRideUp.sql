@@ -2,13 +2,14 @@ CREATE TABLE users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE NOT NULL,
   email TEXT UNIQUE NOT NULL,
-  password_hash TEXT NOT NULL,
+  password_hash TEXT,
   profile_pic TEXT DEFAULT '/static/noprofilpic.png',
   created_by INT REFERENCES users(id) ON DELETE CASCADE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   latitude DOUBLE PRECISION DEFAULT 49.43839,
   longitude DOUBLE PRECISION DEFAULT 1.10160,
-   role_id INTEGER NOT NULL DEFAULT 3
+   role_id INTEGER NOT NULL DEFAULT 3,
+    google_id TEXT UNIQUE,
 );
 
 CREATE TABLE event_participants (

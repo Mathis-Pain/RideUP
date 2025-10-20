@@ -4,6 +4,7 @@ import (
 	"RideUP/handlers"
 	"RideUP/middleware"
 	"RideUP/utils"
+	"RideUP/utils/authextern"
 	"net/http"
 )
 
@@ -26,6 +27,10 @@ func InitRoutes() *http.ServeMux {
 	mux.Handle("/RideUp", middleware.AuthMiddleware(http.HandlerFunc(handlers.RideUpHandler)))
 	mux.Handle("/NewEvent", middleware.AuthMiddleware(http.HandlerFunc(handlers.NewEventHandler)))
 	mux.HandleFunc("/JoinEvent", handlers.JoinEventHandler)
+	mux.Handle("/Profil", middleware.AuthMiddleware(http.HandlerFunc(handlers.ProfilHandler)))
+	// Authentification par google ou github
+	mux.HandleFunc("/auth/google/login", authextern.HandleGoogleLogin)
+	mux.HandleFunc("/auth/google/callback", authextern.HandleGoogleCallback)
 	// servir les fichiers static
 	fs := http.FileServer(http.Dir("static"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))

@@ -34,4 +34,4 @@ il me reste :
     . Personnaliser la photo de profil 
 
   - Voir le systeme de notification des utilisateur 
-  - Gerer les connexion via google et si possible facebook
+ 
