@@ -40,12 +40,13 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	// -----------------------------
 	// 🔹Suppression des sorties qui sont passées
 	// -----------------------------
-	_, err = db.Exec(`DELETE FROM events WHERE start_datetime < datetime('now')`)
+	_, err = db.Exec(`DELETE FROM events WHERE date(start_datetime) < date('now')`)
 	if err != nil {
 		log.Printf("Erreur suppression événements passés : %v", err)
 		utils.InternalServError(w)
 		return
 	}
+	log.Println("Événements passés supprimés avec succès")
 	// -----------------------------
 	// 🔹 Gérer la suppression manuelle d'un utilisateur
 	// -----------------------------

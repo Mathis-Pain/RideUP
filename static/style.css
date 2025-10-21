@@ -314,6 +314,7 @@ input {
 .creatorname {
   color: white;
   text-align: end;
+  margin-right: 5px;
 }
 .join-btn {
   margin-top: 10px;
