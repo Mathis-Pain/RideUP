@@ -41,10 +41,11 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	// 🔹 Sorties créées par l'utilisateur
 	// -----------------------------
 	userRows, err := db.Query(`
-		SELECT id, title, description, created_by, created_at, 
-		       latitude, longitude, address, start_datetime, end_datetime, participants
-		FROM events
-		WHERE created_by = ?`, userID)
+	SELECT id, title, description, created_by, created_at, 
+	       latitude, longitude, address, start_datetime, end_datetime, participants
+	FROM events
+	WHERE created_by = ?
+	ORDER BY start_datetime ASC`, userID)
 	if err != nil {
 		log.Println("Erreur SELECT userEvents:", err)
 		utils.InternalServError(w)
@@ -90,9 +91,10 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	// 🔹 Toutes les sorties disponibles
 	// -----------------------------
 	allRows, err := db.Query(`
-		SELECT id, title, description, created_by, created_at, 
-		       latitude, longitude, address, start_datetime, end_datetime, participants
-		FROM events`)
+	SELECT id, title, description, created_by, created_at, 
+	       latitude, longitude, address, start_datetime, end_datetime, participants
+	FROM events
+	ORDER BY start_datetime ASC`)
 	if err != nil {
 		log.Println("Erreur SELECT availableEvents:", err)
 		utils.InternalServError(w)
