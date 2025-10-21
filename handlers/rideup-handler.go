@@ -71,8 +71,9 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("Erreur Scan userEvents:", err)
 			continue
 		}
-
-		// 🔍 Vérifie si l'utilisateur a rejoint cet event
+		// -----------------------------
+		// 🔹 Vérifie si l'utilisateur a rejoint cet event
+		// -----------------------------
 		var count int
 		err = db.QueryRow(`SELECT COUNT(*) FROM event_participants WHERE user_id = ? AND event_id = ?`,
 			userID, e.ID).Scan(&count)
@@ -118,8 +119,9 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("Erreur Scan availableEvents:", err)
 			continue
 		}
-
-		// 🔍 Vérifie si l'utilisateur a rejoint cet event
+		// -----------------------------
+		// 🔹 Vérifie si l'utilisateur a rejoint cet event
+		// -----------------------------
 		var count int
 		err = db.QueryRow(`SELECT COUNT(*) FROM event_participants WHERE user_id = ? AND event_id = ?`,
 			userID, e.ID).Scan(&count)
@@ -131,6 +133,25 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 
 		availableEvents = append(availableEvents, e)
 	}
+	// -----------------------------
+	// 🔹 Filtrer les event en fonction des preferences utilisateur
+	// -----------------------------
+	// Déclaration des variables pour stocker les valeurs
+	var latitude, longitude float64
+	var preference int
+
+	// Récupération des infos depuis la table users
+	err = db.QueryRow(`
+    SELECT latitude, longitude, preference 
+    FROM users 
+    WHERE id = ?`, userID).Scan(&latitude, &longitude, &preference)
+	if err != nil {
+		log.Printf("Erreur récupération infos utilisateur: %v", err)
+		utils.InternalServError(w)
+		return
+	}
+
+	availableEventsFilter := utils.FilterPreference(availableEvents, latitude, longitude, preference)
 
 	// -----------------------------
 	// 🔹 Données envoyées au template
@@ -142,7 +163,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	}{
 		ActivePage:      "RideUp",
 		UserEvents:      userEvents,
-		AvailableEvents: availableEvents,
+		AvailableEvents: availableEventsFilter,
 	}
 
 	if err := EventHtml.Execute(w, data); err != nil {
