@@ -46,7 +46,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 		utils.InternalServError(w)
 		return
 	}
-	log.Println("Événements passés supprimés avec succès")
+
 	// -----------------------------
 	// 🔹 Gérer la suppression manuelle d'un utilisateur
 	// -----------------------------

@@ -589,15 +589,91 @@ form label {
   width: 100%;
 }
 
-/********* Page RideUP *********/
-
 /* Responsive */
 @media (max-width: 700px) {
-  .nav-links {
-    display: none; /* tu peux plus tard mettre un menu burger */
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+    background: linear-gradient(135deg, #cc5500 50%, #333 50%);
+    color: white;
   }
+
+  .nav-links {
+    position: absolute;
+    right: 0;
+    height: 100vh;
+    top: 0;
+    background-color: #333;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+    transform: translateX(100%);
+    transition: transform 0.5s ease-in;
+    padding-top: 5rem;
+  }
+
+  .nav-links li {
+    margin: 2rem 0;
+  }
+
+  .burger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10001;
+    position: relative; /* nécessaire pour que z-index fonctionne */
+    width: 35px; /* largeur du burger */
+    height: 30px; /* hauteur du burger */
+  }
+
+  .burger div {
+    width: 100%; /* ligne prend toute la largeur du burger */
+    height: 4px; /* épaisseur de la ligne */
+    background-color: white;
+    margin: 4px 0; /* espace entre les lignes */
+    border-radius: 2px; /* arrondi pour joli effet */
+    transition: all 0.3s ease; /* pour l’animation X */
+  }
+
+  .nav-links.nav-active {
+    transform: translateX(0%);
+    z-index: 10000;
+  }
+
+  /* Animation lines */
+  .burger.toggle .line1 {
+    transform: rotate(-45deg) translate(-5px, 6px);
+  }
+  .burger.toggle .line2 {
+    opacity: 0;
+  }
+  .burger.toggle .line3 {
+    transform: rotate(45deg) translate(-5px, -6px);
+  }
+
   .body-newevent {
     box-sizing: border-box;
+  }
+  .logo {
+    margin: auto;
+  }
+  #location {
+    text-align: center;
+  }
+  .location-group {
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+  }
+  .name-application {
+    color: white !important;
+  }
+  .main-rideup {
+    display: flex;
+    flex-direction: column;
   }
   .params-newevent {
     flex-direction: column;
