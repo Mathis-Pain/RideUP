@@ -6,7 +6,7 @@
     <main class="main-profil">
       <h2>Paramètre de recherche :</h2>
       <section class="userposition">
-        <form class="form-profil">
+        <form class="form-profil" method="POST" action="/Profil">
           <div class="form-group">
             <div class="location-group">
               <label for="Location" id="location"
@@ -32,8 +32,9 @@
           <div class="form-group">
             <label for="radius">Rayon de recherche (km) :</label>
             <select id="radius" name="radius">
-              <option value="25" selected>25 km</option>
-              <option value="50">50 km</option>
+              <option value="25">25 km</option>
+              <option value="50" selected>50 km</option>
+              <option value="75">75 km</option>
               <option value="100">100 km</option>
               <option value="150">150 km</option>
               <option value="200">200 km</option>

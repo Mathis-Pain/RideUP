@@ -11,7 +11,8 @@ CREATE TABLE users (
   adress
    role_id INTEGER NOT NULL DEFAULT 3,
     google_id TEXT UNIQUE,
-    address TEXT
+    address TEXT,
+    preference INTEGER DEFAULT 50
 );
 
 CREATE TABLE event_participants (

@@ -56,6 +56,7 @@ func ProfilHandler(w http.ResponseWriter, r *http.Request) {
 		addressuser := r.FormValue("addressuser") // Adresse (peut être vide si coords directes)
 		latStr := r.FormValue("latitude")         // Champs hidden carte
 		lonStr := r.FormValue("longitude")        // Champs hidden carte
+		radius := r.FormValue("radius")
 
 		// Vérifier qu'on a soit une adresse, soit des coordonnées
 		if addressuser == "" && (latStr == "" || lonStr == "") {
@@ -99,9 +100,10 @@ func ProfilHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		// Insertion dans la base de données avec l'adresse
 		_, err = db.Exec(`
-			PATCH INTO users ( latitude, longitude,address )
-			VALUES ( ?, ?,?)`,
-			lat, lon, finalAddress)
+    UPDATE users 
+    SET latitude = ?, longitude = ?, address = ?, preference = ?
+    WHERE id = ?`,
+			lat, lon, finalAddress, radius, session.UserID)
 		if err != nil {
 			log.Printf("ERREUR : insertion user: %v", err)
 			http.Error(w, "Impossible de modifier l'adresse", http.StatusInternalServerError)
