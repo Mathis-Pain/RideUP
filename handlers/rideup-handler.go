@@ -36,7 +36,15 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer db.Close()
-
+	// -----------------------------
+	// 🔹suppression des sorties qui sont passées
+	// -----------------------------
+	_, err = db.Exec(`DELETE FROM events WHERE start_datetime < datetime('now')`)
+	if err != nil {
+		log.Printf("Erreur suppression événements passés : %v", err)
+		utils.InternalServError(w)
+		return
+	}
 	// -----------------------------
 	// 🔹 Sorties créées par l'utilisateur
 	// -----------------------------
