@@ -26,6 +26,7 @@ Que tu sois amateur de virées tranquilles ou adepte de routes sinueuses, RideUp
 
 ‼️ voir les modalitées d'utilisation de map en cas de mise en prod
 
+A partir de la branche "mathis"
 Pour demarrer le programme en local "go run ."
 
 
