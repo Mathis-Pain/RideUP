@@ -113,3 +113,13 @@ Héberger le projet (par ex. Railway ou Render gratuit).
 
 Quand ça marche → PWA pour que les motards puissent installer RideUp sur leur tél.
 
+///////////////////////////////MEMO/////////////////////////////
+
+il me reste objectif proche:
+  - creation de la section profil avec : 
+    . rendre la modification de la position utilisateur Possible
+    . Appliquer un filtre de zone pour voir les sorties comprise dans un perimetre 
+    . Personnaliser la photo de profil 
+
+  - Voir le systeme de notification des utilisateur 
+ 

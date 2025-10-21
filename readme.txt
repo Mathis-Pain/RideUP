@@ -26,12 +26,6 @@ Que tu sois amateur de virées tranquilles ou adepte de routes sinueuses, RideUp
 
 ‼️ voir les modalitées d'utilisation de map en cas de mise en prod
 
+Pour demarrer le programme en local "go run ."
 
-il me reste :
-  - creation de la section profil avec : 
-    . rendre la modification de la position utilisateur Possible
-    . Appliquer un filtre de zone pour voir les sorties comprise dans un perimetre 
-    . Personnaliser la photo de profil 
 
-  - Voir le systeme de notification des utilisateur 
- 

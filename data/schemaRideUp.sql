@@ -8,8 +8,10 @@ CREATE TABLE users (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   latitude DOUBLE PRECISION DEFAULT 49.43839,
   longitude DOUBLE PRECISION DEFAULT 1.10160,
+  adress
    role_id INTEGER NOT NULL DEFAULT 3,
     google_id TEXT UNIQUE,
+    address TEXT
 );
 
 CREATE TABLE event_participants (
