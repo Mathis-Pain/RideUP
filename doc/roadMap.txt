@@ -122,4 +122,5 @@ il me reste objectif proche:
     . Personnaliser la photo de profil 
 
   - Voir le systeme de notification des utilisateur 
+  - Informer des cookies
  

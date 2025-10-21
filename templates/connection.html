@@ -48,5 +48,24 @@
       </div>
     </main>
     {{template "InitFooter" .}}
+
+    <div id="cookie-banner" class="cookie-banner hidden">
+      <div class="cookie-content">
+        <p>
+          🍪 Ce site utilise des cookies pour améliorer votre expérience.
+          <br />
+          En continuant, vous acceptez notre utilisation des cookies.
+        </p>
+        <div class="cookie-buttons">
+          <button id="accept-cookies" class="cookie-btn accept">
+            Accepter
+          </button>
+          <button id="decline-cookies" class="cookie-btn decline">
+            Refuser
+          </button>
+        </div>
+      </div>
+    </div>
+    <script src="/static/js/connection.js" defer></script>
   </body>
 </html>
