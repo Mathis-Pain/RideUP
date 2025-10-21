@@ -11,7 +11,10 @@
         <div class="cards-container">
           {{range .UserEvents}}
           <div class="card">
-            <h3>{{.Title}}</h3>
+            <div class="title-creatorname">
+              <h3>{{.Title}}</h3>
+              <p class="creatorname">{{.CreatorName}}</p>
+            </div>
 
             <p><strong>Date :</strong>{{.FormattedStart}}</p>
             <p>
@@ -21,6 +24,7 @@
             {{if .Description.Valid}}
             <p>{{.Description.String}}</p>
             {{end}}
+            <button class="join-btn" data-event-id="{{.ID}}">SUPPRIMER</button>
             <span class="user-participants">
               <img
                 src="/static/images/icone-participant.png"
@@ -42,7 +46,10 @@
         <div class="cards-container">
           {{range .AvailableEvents}}
           <div class="card">
-            <h3>{{.Title}}</h3>
+            <div class="title-creatorname">
+              <h3>{{.Title}}</h3>
+              <p class="creatorname">{{.CreatorName}}</p>
+            </div>
             <p><strong>Date :</strong>{{.FormattedStart}}</p>
             <p>
               <strong>Lieu :</strong>

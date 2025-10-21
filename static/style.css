@@ -299,7 +299,19 @@ input {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   color: var(--grey);
 }
+.title-creatorname {
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  padding: 5px;
+  display: flex;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #cc5500 50%, var(--grey) 50%);
+}
 
+.creatorname {
+  color: white;
+  text-align: end;
+}
 .join-btn {
   margin-top: 10px;
   margin-bottom: 10px;

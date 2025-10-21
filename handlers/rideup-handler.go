@@ -49,11 +49,12 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	// 🔹 Sorties créées par l'utilisateur
 	// -----------------------------
 	userRows, err := db.Query(`
-	SELECT id, title, description, created_by, created_at, 
-	       latitude, longitude, address, start_datetime, end_datetime, participants
-	FROM events
-	WHERE created_by = ?
-	ORDER BY start_datetime ASC`, userID)
+	SELECT e.id, e.title, e.description, e.created_by, u.username, e.created_at,
+	       e.latitude, e.longitude, e.address, e.start_datetime, e.end_datetime, e.participants
+	FROM events e
+	JOIN users u ON e.created_by = u.id
+	WHERE e.created_by = ?
+	ORDER BY e.start_datetime ASC`, userID)
 	if err != nil {
 		log.Println("Erreur SELECT userEvents:", err)
 		utils.InternalServError(w)
@@ -69,6 +70,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 			&e.Title,
 			&e.Description,
 			&e.CreatedBy,
+			&e.CreatorName,
 			&e.CreatedAt,
 			&e.Latitude,
 			&e.Longitude,
@@ -99,10 +101,11 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	// 🔹 Toutes les sorties disponibles
 	// -----------------------------
 	allRows, err := db.Query(`
-	SELECT id, title, description, created_by, created_at, 
-	       latitude, longitude, address, start_datetime, end_datetime, participants
-	FROM events
-	ORDER BY start_datetime ASC`)
+	SELECT e.id, e.title, e.description, e.created_by, u.username, e.created_at,
+	       e.latitude, e.longitude, e.address, e.start_datetime, e.end_datetime, e.participants
+	FROM events e
+	JOIN users u ON e.created_by = u.id
+	ORDER BY e.start_datetime ASC`)
 	if err != nil {
 		log.Println("Erreur SELECT availableEvents:", err)
 		utils.InternalServError(w)
@@ -118,6 +121,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 			&e.Title,
 			&e.Description,
 			&e.CreatedBy,
+			&e.CreatorName,
 			&e.CreatedAt,
 			&e.Latitude,
 			&e.Longitude,
