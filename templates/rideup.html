@@ -24,6 +24,7 @@
             {{if .Description.Valid}}
             <p>{{.Description.String}}</p>
             {{end}}
+           <div class="btn-participants">
             <button class="join-btn" data-event-id="{{.ID}}">SUPPRIMER</button>
             <span class="user-participants">
               <img
@@ -71,6 +72,7 @@
                 {{if
                 .Participants.Valid}}{{.Participants.Int64}}{{else}}0{{end}}
               </span>
+              </div>
             </div>
           </div>
           {{else}}

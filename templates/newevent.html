@@ -39,8 +39,18 @@
             placeholder="entrer l'adresse"
           />
 
-          <input type="hidden" id="latitude" name="latitude" value="" />
-          <input type="hidden" id="longitude" name="longitude" value="" />
+          <input
+            type="hidden"
+            id="latitude"
+            name="latitude"
+            value="{{.Latitude}}"
+          />
+          <input
+            type="hidden"
+            id="longitude"
+            name="longitude"
+            value="{{.Longitude}}"
+          />
         </div>
 
         <!-- Carte -->

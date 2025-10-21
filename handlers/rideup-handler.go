@@ -36,6 +36,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer db.Close()
+
 	// -----------------------------
 	// 🔹Suppression des sorties qui sont passées
 	// -----------------------------
@@ -44,6 +45,33 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Erreur suppression événements passés : %v", err)
 		utils.InternalServError(w)
 		return
+	}
+	// -----------------------------
+	// 🔹 Gérer la suppression manuelle d'un utilisateur
+	// -----------------------------
+	if r.Method == http.MethodPost {
+		eventID := r.FormValue("event_id")
+		action := r.FormValue("action")
+
+		if action == "delete" {
+			// Vérifie que c’est bien l’événement de l’utilisateur
+			_, err := db.Exec(`DELETE FROM events WHERE id = ? AND created_by = ?`, eventID, session.UserID)
+			if err != nil {
+				log.Printf("Erreur suppression événement : %v", err)
+				http.Error(w, "Erreur lors de la suppression", http.StatusInternalServerError)
+				return
+			} else {
+				// Réponse JSON de succès
+				w.Header().Set("Content-Type", "application/json")
+				w.Write([]byte(`{"success": true}`))
+				return
+			}
+
+			// Réponse JSON pour confirmer la suppression
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"success": true}`))
+			return
+		}
 	}
 	// -----------------------------
 	// 🔹 Sorties créées par l'utilisateur

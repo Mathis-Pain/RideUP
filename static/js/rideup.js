@@ -4,32 +4,54 @@ document.addEventListener("DOMContentLoaded", () => {
 
   buttons.forEach((btn) => {
     btn.addEventListener("click", async () => {
-      console.log("Bouton cliqué !");
       const eventId = btn.dataset.eventId;
-      const action = btn.textContent.trim() === "Rejoindre" ? "join" : "leave";
+      const action = btn.textContent.trim().toLowerCase(); // "rejoindre", "annuler" ou "supprimer"
+      console.log("Action détectée :", action, "pour event", eventId);
 
       try {
+        // 🔹 Suppression d’un événement (propriétaire)
+        if (action === "supprimer") {
+          if (!confirm("Voulez-vous vraiment supprimer cet événement ?"))
+            return;
+
+          const response = await fetch("/RideUp", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `event_id=${eventId}&action=delete`,
+          });
+
+          if (!response.ok)
+            throw new Error("Erreur serveur lors de la suppression");
+
+          const data = await response.json();
+
+          if (data.success) {
+            // ✅ Recharge la page pour actualiser la liste
+            window.location.href = "/RideUp";
+          } else {
+            alert("Impossible de supprimer cet événement.");
+          }
+
+          return; // on sort ici
+        }
+
+        // 🔹 Gestion du join / leave
+        const actionType = action === "rejoindre" ? "join" : "leave";
         const response = await fetch("/JoinEvent", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: `event_id=${eventId}&action=${action}`,
+          body: `event_id=${eventId}&action=${actionType}`,
         });
 
         if (!response.ok) throw new Error("Erreur serveur");
         const data = await response.json();
         console.log("Réponse serveur :", data);
 
-        // 🔹 1. Met à jour le texte du bouton
-        btn.textContent = data.joined ? "Annuler" : "Rejoindre";
-
-        // 🔹 2. Met à jour le nombre de participants dans la carte
-        const card = btn.closest(".card"); // remonte jusqu’à la carte parente
-        const counter = card.querySelector(".participants-count"); // trouve le <span>
-        if (counter) {
-          counter.textContent = data.participants; // remplace par la nouvelle valeur
-        }
+        // ✅ Recharge la page après rejoindre / annuler
+        window.location.href = "/RideUp";
       } catch (err) {
         console.error("Erreur :", err);
+        alert("Une erreur est survenue, veuillez réessayer.");
       }
     });
   });

@@ -307,6 +307,9 @@ input {
   justify-content: space-between;
   background: linear-gradient(135deg, #cc5500 50%, var(--grey) 50%);
 }
+.title-creatorname h3 {
+  margin-left: 5px;
+}
 
 .creatorname {
   color: white;
