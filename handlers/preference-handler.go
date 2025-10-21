@@ -12,14 +12,14 @@ import (
 	"strconv"
 )
 
-var ProfilHtml = template.Must(template.ParseFiles(
-	"templates/profil.html",
+var PreferenceHtml = template.Must(template.ParseFiles(
+	"templates/preference.html",
 	"templates/inithtml/inithead.html",
 	"templates/inithtml/initnav.html",
 	"templates/inithtml/initfooter.html",
 ))
 
-func ProfilHandler(w http.ResponseWriter, r *http.Request) {
+func PreferenceHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Récupère l'utilisateur connecté
 	session, err := sessions.GetSessionFromRequest(r)
@@ -113,7 +113,7 @@ func ProfilHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/RideUp", http.StatusSeeOther)
 		return
 	}
-	if err := ProfilHtml.Execute(w, data); err != nil {
+	if err := PreferenceHtml.Execute(w, data); err != nil {
 		log.Printf("Erreur lors de l'exécution du template rideup.html: %v", err)
 		utils.InternalServError(w)
 	}

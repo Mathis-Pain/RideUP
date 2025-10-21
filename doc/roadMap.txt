@@ -122,5 +122,6 @@ il me reste objectif proche:
     . Personnaliser la photo de profil 
 
   - Voir le systeme de notification des utilisateur 
-  - Informer des cookies
+  - panneau d'administration
  
+  background: linear-gradient(135deg, var(--grey) 40%, #cc5500 100%);

@@ -15,8 +15,15 @@
   <ul class="nav-links">
     <li><a href="/RideUp">Tableau de bord</a></li>
     <li><a href="/NewEvent">Créer une sortie</a></li>
-    <li><a href="/Profil">Profil</a></li>
-    <li><a href="/Disconnect">Déconnexion</a></li>
+    <li class="dropdown">
+      <a href="#" class="dropbtn">Profil ▾</a>
+      <ul class="dropdown-content">
+        <li><a href="/Preference">Préférences</a></li>
+        <li><a href="/Profil/Photo">Modifier la photo</a></li>
+        <li><a href="/UpdatePassword">Changer le mot de passe</a></li>
+        <li><a href="/Disconnect">Déconnexion</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
 {{end}}

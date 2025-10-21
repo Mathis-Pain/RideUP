@@ -10,4 +10,11 @@ document.querySelectorAll(".nav-links li a").forEach((link) => {
     nav.classList.remove("nav-active");
     burger.classList.remove("toggle");
   });
+  const dropdown = document.querySelector(".dropdown");
+  const dropbtn = document.querySelector(".dropbtn");
+
+  dropbtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    dropdown.classList.toggle("active");
+  });
 });

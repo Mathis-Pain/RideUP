@@ -29,15 +29,15 @@ textarea {
   --color-error: red;
 }
 .body-connection,
-.body-home,
+.body-UpdatePassword .body-home,
 .body-registration,
-.body-error {
+‚ .body-error {
   margin: 0;
   padding: 0;
   display: flex;
+  min-height: 100vh;
   flex-direction: column;
   align-items: center;
-  height: 100vh;
 }
 .main-home {
   flex: 1;
@@ -133,22 +133,27 @@ footer p {
   text-align: center; /* centre le texte si tu veux */
 }
 /********* Page du formulaire d'inscription *********/
-h2 {
-  font-size: 2rem;
-  margin: 1;
-  background: linear-gradient(135deg, #cc5500 50%, var(--grey) 50%);
-  /* Appliquer le dégradé au texte */
-  -webkit-background-clip: text; /* Safari, Chrome */
-  -webkit-text-fill-color: transparent;
-  background-clip: text; /* standard, Firefox et autres */
-  color: transparent; /* fallback si needed */
-}
-.main-registration {
+
+.main-connection {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-evenly;
   font-family: var(--font-text);
+}
+
+.main-connection h2 {
+  font-size: 2rem;
+  background: linear-gradient(135deg, #cc5500 50%, var(--grey) 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+
+  padding: 0;
+  line-height: 1;
+  display: inline-block;
 }
 
 #registerForm {
@@ -182,6 +187,7 @@ input {
   text-align: center; /* centre le texte ET le placeholder */
   cursor: pointer;
   padding: 8px;
+  margin: auto;
 }
 
 /* groupe "Afficher" */
@@ -230,10 +236,6 @@ input {
   flex-direction: column;
   align-items: center;
   font-family: var(--font-text);
-}
-
-.main-connection h2 {
-  margin: 10%;
 }
 
 .main-connection .form-group {
@@ -482,7 +484,155 @@ input {
 .nav-links a:hover {
   color: var(--orange);
 }
+.dropdown {
+  position: relative;
+}
 
+.dropbtn {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  min-width: 200px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  list-style: none;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.dropdown-content li {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-content li:last-child {
+  border-bottom: none;
+}
+
+.dropdown-content a {
+  color: #333;
+  padding: 0.75rem 1.25rem;
+  display: block;
+  transition: all 0.2s ease;
+}
+
+.dropdown-content a:hover {
+  background: #f5f5f5;
+  color: var(--orange);
+}
+
+.dropdown.active .dropdown-content {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Burger menu pour mobile */
+.burger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 4px;
+}
+
+.burger div {
+  width: 25px;
+  height: 3px;
+  background: white;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .burger {
+    display: flex;
+  }
+
+  .nav-links {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: linear-gradient(135deg, #cc5500 50%, var(--grey) 50%);
+    flex-direction: column;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    gap: 0;
+    padding: 0;
+  }
+
+  .nav-links.active {
+    max-height: 400px;
+    padding: 1rem 0;
+  }
+
+  .nav-links li {
+    width: 100%;
+    text-align: center;
+    padding: 0.5rem 0;
+  }
+
+  .dropdown-content {
+    position: static;
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.1);
+    margin-top: 0.5rem;
+  }
+
+  .dropdown-content a {
+    color: white;
+  }
+
+  .burger.active .line1 {
+    transform: rotate(-45deg) translate(-5px, 6px);
+  }
+
+  .burger.active .line2 {
+    opacity: 0;
+  }
+
+  .burger.active .line3 {
+    transform: rotate(45deg) translate(-5px, -6px);
+  }
+}
+
+/* Contenu de démonstration */
+.content {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.content h1 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.content p {
+  color: #666;
+  line-height: 1.6;
+}
 /********* Page newevent *********/
 .body-newevent {
   margin: 0;
@@ -581,7 +731,7 @@ form label {
   align-items: center;
   justify-content: center;
 }
-.form-profil {
+.form-preference {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -589,8 +739,94 @@ form label {
   width: 100%;
 }
 
+/********* Page UpdatePassword *********/
+
+.update-password {
+  flex: 1; /* prend tout l’espace disponible sous la navbar */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+/* Formulaire stylé et centré */
+#update-passoword-form {
+  padding: 40px 50px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* Groupes de champs */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-weight: 600;
+  color: var(--grey);
+}
+
+input[type="password"] {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+footer {
+  margin-top: auto; /* pousse le footer en bas si besoin */
+}
+
+/* Checkbox + texte "Afficher" */
+.show-password {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
 /* Responsive */
 @media (max-width: 700px) {
+  html,
+  body {
+    height: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .body-newevent,
+  .body-profil,
+  .body-rideup {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 100vh;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  footer {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  footer p {
+    background: var(--grey);
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    margin: 0;
+  }
   .navbar {
     display: flex;
     justify-content: space-between;
