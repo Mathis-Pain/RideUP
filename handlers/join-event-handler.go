@@ -19,13 +19,13 @@ func JoinEventHandler(w http.ResponseWriter, r *http.Request) {
 
 	session, err := sessions.GetSessionFromRequest(r)
 	if err != nil {
-		log.Println("❌ Utilisateur non connecté")
+		log.Println(" Utilisateur non connecté")
 		http.Error(w, "Non connecté", http.StatusUnauthorized)
 		return
 	}
 
 	if err := r.ParseForm(); err != nil {
-		log.Printf("❌ Erreur ParseForm: %v", err)
+		log.Printf(" Erreur ParseForm: %v", err)
 		http.Error(w, "Données invalides", http.StatusBadRequest)
 		return
 	}
@@ -36,14 +36,14 @@ func JoinEventHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("📝 EventID: %s, Action: %s, UserID: %d", eventID, action, session.UserID)
 
 	if eventID == "" || (action != "join" && action != "leave") {
-		log.Println("❌ Paramètres invalides")
+		log.Println(" Paramètres invalides")
 		http.Error(w, "Paramètres invalides", http.StatusBadRequest)
 		return
 	}
 
 	db, err := sql.Open("sqlite3", "./data/RideUp.db")
 	if err != nil {
-		log.Printf("❌ Erreur ouverture DB: %v", err)
+		log.Printf(" Erreur ouverture DB: %v", err)
 		utils.InternalServError(w)
 		return
 	}
@@ -58,7 +58,7 @@ func JoinEventHandler(w http.ResponseWriter, r *http.Request) {
 		err = db.QueryRow(`SELECT COUNT(*) FROM event_participants WHERE user_id = ? AND event_id = ?`,
 			session.UserID, eventID).Scan(&count)
 		if err != nil {
-			log.Printf("❌ Erreur vérification inscription: %v", err)
+			log.Printf(" Erreur vérification inscription: %v", err)
 			http.Error(w, "Erreur base de données", http.StatusInternalServerError)
 			return
 		}
@@ -68,7 +68,7 @@ func JoinEventHandler(w http.ResponseWriter, r *http.Request) {
 			_, err = db.Exec(`INSERT INTO event_participants (user_id, event_id) VALUES (?, ?)`,
 				session.UserID, eventID)
 			if err != nil {
-				log.Printf("❌ Erreur insertion participant: %v", err)
+				log.Printf("Erreur insertion participant: %v", err)
 				http.Error(w, "Erreur insertion", http.StatusInternalServerError)
 				return
 			}
@@ -76,14 +76,14 @@ func JoinEventHandler(w http.ResponseWriter, r *http.Request) {
 			// Incrémenter le compteur
 			_, err = db.Exec(`UPDATE events SET participants = COALESCE(participants, 0) + 1 WHERE id = ?`, eventID)
 			if err != nil {
-				log.Printf("⚠️ Erreur mise à jour compteur: %v", err)
+				log.Printf("Erreur mise à jour compteur: %v", err)
 			}
 
 			joined = true
-			log.Printf("✅ Utilisateur %d inscrit à l'événement %s", session.UserID, eventID)
+			log.Printf(" Utilisateur %d inscrit à l'événement %s", session.UserID, eventID)
 		} else {
 			joined = true // Déjà inscrit
-			log.Printf("ℹ️ Utilisateur %d déjà inscrit à l'événement %s", session.UserID, eventID)
+			log.Printf("Utilisateur %d déjà inscrit à l'événement %s", session.UserID, eventID)
 		}
 
 	} else if action == "leave" {
@@ -91,7 +91,7 @@ func JoinEventHandler(w http.ResponseWriter, r *http.Request) {
 		result, err := db.Exec(`DELETE FROM event_participants WHERE user_id = ? AND event_id = ?`,
 			session.UserID, eventID)
 		if err != nil {
-			log.Printf("❌ Erreur suppression participant: %v", err)
+			log.Printf(" Erreur suppression participant: %v", err)
 			http.Error(w, "Erreur suppression", http.StatusInternalServerError)
 			return
 		}
@@ -102,9 +102,9 @@ func JoinEventHandler(w http.ResponseWriter, r *http.Request) {
 			// Décrémenter le compteur
 			_, err = db.Exec(`UPDATE events SET participants = MAX(0, COALESCE(participants, 0) - 1) WHERE id = ?`, eventID)
 			if err != nil {
-				log.Printf("⚠️ Erreur mise à jour compteur: %v", err)
+				log.Printf("Erreur mise à jour compteur: %v", err)
 			}
-			log.Printf("✅ Utilisateur %d désinscrit de l'événement %s", session.UserID, eventID)
+			log.Printf("Utilisateur %d désinscrit de l'événement %s", session.UserID, eventID)
 		}
 
 		joined = false
@@ -113,7 +113,7 @@ func JoinEventHandler(w http.ResponseWriter, r *http.Request) {
 	// Récupérer le nombre de participants
 	err = db.QueryRow(`SELECT COALESCE(participants, 0) FROM events WHERE id = ?`, eventID).Scan(&participants)
 	if err != nil {
-		log.Printf("⚠️ Erreur récupération participants: %v", err)
+		log.Printf(" Erreur récupération participants: %v", err)
 		participants = 0
 	}
 
@@ -124,7 +124,7 @@ func JoinEventHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(response); err != nil {
-		log.Printf("❌ Erreur encodage JSON: %v", err)
+		log.Printf("Erreur encodage JSON: %v", err)
 	}
 
 	log.Printf("✅ Réponse envoyée: joined=%v, participants=%d", joined, participants)

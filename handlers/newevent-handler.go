@@ -60,11 +60,6 @@ func NewEventHandler(w http.ResponseWriter, r *http.Request) {
 		latStr := r.FormValue("latitude")  // Champs hidden carte
 		lonStr := r.FormValue("longitude") // Champs hidden carte
 
-		// Debug
-		log.Printf("DEBUG - title: %s", title)
-		log.Printf("DEBUG - address: %s", address)
-		log.Printf("DEBUG - latStr: %s, lonStr: %s", latStr, lonStr)
-
 		if title == "" || dateStr == "" || timeStr == "" {
 			http.Error(w, "Le titre, la date et l'heure sont obligatoires", http.StatusBadRequest)
 			return

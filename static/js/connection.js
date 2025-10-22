@@ -24,4 +24,10 @@ document.addEventListener("DOMContentLoaded", () => {
     banner.classList.remove("show");
     setTimeout(() => banner.classList.add("hidden"), 500);
   }
+  function togglePassword(fieldId, checkbox) {
+    const passwordField = document.getElementById(fieldId);
+    if (passwordField) {
+      passwordField.type = checkbox.checked ? "text" : "password";
+    }
+  }
 });
