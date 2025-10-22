@@ -561,61 +561,6 @@ input {
   transition: all 0.3s ease;
 }
 
-/* Responsive */
-@media screen and (max-width: 768px) {
-  .burger {
-    display: flex;
-  }
-
-  .nav-links {
-    position: absolute;
-    right: 0;
-    top: 100%;
-    background: linear-gradient(135deg, #cc5500 50%, var(--grey) 50%);
-    flex-direction: column;
-    width: 100%;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-    gap: 0;
-    padding: 0;
-  }
-
-  .nav-links.active {
-    max-height: 400px;
-    padding: 1rem 0;
-  }
-
-  .nav-links li {
-    width: 100%;
-    text-align: center;
-    padding: 0.5rem 0;
-  }
-
-  .dropdown-content {
-    position: static;
-    box-shadow: none;
-    background: rgba(255, 255, 255, 0.1);
-    margin-top: 0.5rem;
-  }
-
-  .dropdown-content a {
-    color: white;
-  }
-
-  .burger.active .line1 {
-    transform: rotate(-45deg) translate(-5px, 6px);
-  }
-
-  .burger.active .line2 {
-    opacity: 0;
-  }
-
-  .burger.active .line3 {
-    transform: rotate(45deg) translate(-5px, -6px);
-  }
-}
-
 /* Contenu de démonstration */
 .content {
   padding: 2rem;
@@ -838,6 +783,7 @@ h2 {
     padding: 0 1rem;
     background: linear-gradient(135deg, #cc5500 50%, #333 50%);
     color: white;
+    z-index: 1000;
   }
 
   .nav-links {
@@ -872,7 +818,7 @@ h2 {
   .burger div {
     width: 100%; /* ligne prend toute la largeur du burger */
     height: 4px; /* épaisseur de la ligne */
-    background-color: white;
+    background-color: white !important;
     margin: 4px 0; /* espace entre les lignes */
     border-radius: 2px; /* arrondi pour joli effet */
     transition: all 0.3s ease; /* pour l’animation X */
@@ -918,5 +864,28 @@ h2 {
   .params-newevent {
     flex-direction: column;
     align-items: center;
+  }
+  .dropdown-content {
+    top: 0; /* même hauteur que le bouton */
+    transform: translateX(-10px);
+    right: 100%;
+    min-width: 150px; /* largeur adaptée au mobile */
+    background-color: #333;
+  }
+
+  /* Tu peux éventuellement changer l’animation pour un slide horizontal */
+  .dropdown.active .dropdown-content {
+    display: block;
+    animation: slideInLeft 0.3s ease;
+  }
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 }
