@@ -16,6 +16,7 @@ type User struct {
 }
 
 type UpdatePassword struct {
-	OldPasswordError string
-	NewPasswordError string
+	OldPasswordError        string
+	NewPasswordError        string
+	ConfirmNewPasswordError string
 }

@@ -21,29 +21,33 @@ var UpdatePasswordHtml = template.Must(template.ParseFiles(
 ))
 
 func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
+	// Vérifie la session dès le début pour GET et POST
+	session, err := sessions.GetSessionFromRequest(r)
+	if err != nil {
+		http.Redirect(w, r, "/Connect", http.StatusSeeOther)
+		return
+	}
+
 	switch r.Method {
 	case http.MethodGet:
-		err := UpdatePasswordHtml.Execute(w, nil)
-		if err != nil {
-			log.Printf("Erreur lors de l'exécution du template UpdatePasswordHtml: %v", err)
+		// Affichage initial du formulaire
+		if err := UpdatePasswordHtml.Execute(w, nil); err != nil {
+			log.Printf("Erreur template GET UpdatePasswordHtml: %v", err)
 			utils.NotFoundHandler(w)
 		}
 		return
 
 	case http.MethodPost:
-		session, err := sessions.GetSessionFromRequest(r)
-		if err != nil {
-			http.Redirect(w, r, "/Connect", http.StatusSeeOther)
-			return
-		}
-
+		// Connexion à la DB
 		db, err := sql.Open("sqlite3", "./data/RideUp.db")
 		if err != nil {
+			log.Printf("Erreur ouverture DB: %v", err)
 			utils.InternalServError(w)
 			return
 		}
 		defer db.Close()
 
+		// Parse le formulaire
 		if err := r.ParseForm(); err != nil {
 			http.Error(w, "Erreur formulaire", http.StatusBadRequest)
 			return
@@ -51,9 +55,12 @@ func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
 
 		oldPassword := r.FormValue("OldPassword")
 		newPassword := r.FormValue("NewPassword")
-		confirmPassword := r.FormValue("ConfirmNewPassword")
+		confirmPassword := r.FormValue("confirmNewPassword") // ← Attention à la casse !
 
-		// Récupère le hash actuel
+		// Struct pour les erreurs
+		formData := models.UpdatePassword{}
+
+		// 1. Récupère le hash actuel
 		passwordHash, err := getdata.GetPasswordHash(db, session.UserID)
 		if err != nil {
 			log.Printf("Erreur récupération du mot de passe: %v", err)
@@ -61,33 +68,37 @@ func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Vérifie l'ancien mot de passe
-		if bcrypt.CompareHashAndPassword([]byte(passwordHash), []byte(oldPassword)) != nil {
-			data := models.UpdatePassword{
-				OldPasswordError: "Ancien mot de passe incorrect",
+		// 2. Vérifie l'ancien mot de passe
+		if err := bcrypt.CompareHashAndPassword([]byte(passwordHash), []byte(oldPassword)); err != nil {
+			formData.OldPasswordError = "Ancien mot de passe incorrect"
+		}
+
+		// 3. Vérifie que les nouveaux mots de passe correspondent
+		if newPassword != confirmPassword {
+			formData.ConfirmNewPasswordError = "Les deux nouveaux mots de passe ne sont pas identiques."
+		}
+
+		// 4. Valide le nouveau mot de passe
+		if newPassErr := utils.ValidPassword(newPassword, confirmPassword); newPassErr != "" {
+			formData.NewPasswordError = newPassErr
+		}
+
+		// 5. Si des erreurs existent, renvoie le formulaire
+		if formData.OldPasswordError != "" || formData.NewPasswordError != "" || formData.ConfirmNewPasswordError != "" {
+			if err := UpdatePasswordHtml.Execute(w, formData); err != nil {
+				log.Printf("Erreur affichage template avec erreurs: %v", err)
 			}
-			UpdatePasswordHtml.Execute(w, data)
 			return
 		}
 
-		// Vérifie la validité du nouveau mot de passe
-		newPassErr := utils.ValidPassword(newPassword, confirmPassword)
-		if newPassErr != "" {
-			data := models.UpdatePassword{
-				NewPasswordError: newPassErr,
-			}
-			UpdatePasswordHtml.Execute(w, data)
-			return
-		}
-
-		// Hash le nouveau mot de passe
+		// 6. Tout est OK → hash et update
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
 		if err != nil {
+			log.Printf("Erreur génération hash: %v", err)
 			utils.InternalServError(w)
 			return
 		}
 
-		// Met à jour le mot de passe dans la DB
 		_, err = db.Exec(`UPDATE users SET password_hash = ? WHERE id = ?`, hashedPassword, session.UserID)
 		if err != nil {
 			log.Printf("Erreur de mise à jour du mot de passe: %v", err)
@@ -95,7 +106,10 @@ func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Redirige vers le profil avec succès
-		http.Redirect(w, r, "/RideUp", http.StatusSeeOther)
+		// 7. Succès → redirection
+		http.Redirect(w, r, "/Profil", http.StatusSeeOther)
+
+	default:
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
 	}
 }
