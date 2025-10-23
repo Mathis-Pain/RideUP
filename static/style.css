@@ -861,21 +861,7 @@ h2 {
     min-width: 150px; /* largeur adaptée au mobile */
     background-color: #333;
   }
-  /* Burger menu pour mobile */
-  .burger {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-    gap: 4px;
-  }
 
-  .burger div {
-    width: 25px;
-    height: 3px;
-    background: white;
-    border-radius: 3px;
-    transition: all 0.3s ease;
-  }
   /********* Page Newevent *********/
   .params-newevent .param {
     flex-direction: column; /* label au-dessus de l’input */
