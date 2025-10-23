@@ -29,15 +29,18 @@ textarea {
   --color-error: red;
 }
 .body-connection,
-.body-UpdatePassword .body-home,
+.body-UpdatePassword,
+.body-home,
 .body-registration,
-‚ .body-error {
+.body-error {
   margin: 0;
   padding: 0;
   display: flex;
   min-height: 100vh;
   flex-direction: column;
-  align-items: center;
+}
+.body-home {
+  overflow: hidden;
 }
 .main-home {
   flex: 1;
@@ -159,7 +162,6 @@ footer p {
 #registerForm {
   display: flex;
   flex-direction: column;
-  width: 100%;
 }
 
 .form-label {
@@ -373,7 +375,6 @@ input {
 .title-creatorname {
   border-radius: 10px;
   margin-bottom: 1rem;
-  padding: 5px;
   display: flex;
   justify-content: space-between;
   background: linear-gradient(135deg, #cc5500 50%, var(--grey) 50%);
@@ -446,7 +447,7 @@ input {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 40px;
+  padding: 3px 40px;
 }
 
 /* Logo à gauche */
@@ -545,22 +546,6 @@ input {
   }
 }
 
-/* Burger menu pour mobile */
-.burger {
-  display: none;
-  flex-direction: column;
-  cursor: pointer;
-  gap: 4px;
-}
-
-.burger div {
-  width: 25px;
-  height: 3px;
-  background: white;
-  border-radius: 3px;
-  transition: all 0.3s ease;
-}
-
 /* Contenu de démonstration */
 .content {
   padding: 2rem;
@@ -579,20 +564,18 @@ input {
 }
 /********* Page newevent *********/
 .body-newevent {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
+  height: 100vh; /* hauteur fixe = hauteur de l'écran */
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  overflow: hidden; /* bloque le scroll */
 }
 
 .main-newevent {
-  display: flex;
   flex: 1;
+  display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 100%;
+  padding: 0.5rem;
+  overflow: hidden;
 }
 form label {
   margin-bottom: 0.5rem;
@@ -605,15 +588,19 @@ form label {
 }
 
 .form-newevent {
-  margin-top: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
 }
 .params-newevent {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between; /* espace entre chaque champ */
+  gap: 20px;
+  width: 80%; /* limite la largeur de la ligne */
 }
 .form-newevent {
   display: flex;
@@ -623,32 +610,35 @@ form label {
   width: 100%;
 }
 
-.params-newevent {
-  display: flex;
-  justify-content: space-between; /* espace entre chaque champ */
-  gap: 20px;
-  width: 80%; /* limite la largeur de la ligne */
-}
-
 .params-newevent .param {
   display: flex;
-  flex-direction: column; /* label au-dessus de l’input */
+  align-items: center;
+  flex-direction: row; /* label au-dessus de l’input */
   flex: 1; /* pour que chaque champ prenne la même largeur */
 }
 
 #map {
   width: 80%;
-  height: 500px;
+  flex: 1; /* prend tout l'espace restant */
+  min-height: 250px;
   border-radius: 10px;
-  cursor: url("./cross.png") 16 16, crosshair;
 }
-
-/********* Page Profil *********/
+/********* Page Preference *********/
+.body-profil {
+  height: 100vh; /* hauteur fixe = hauteur de l'écran */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* bloque le scroll */
+}
 .main-profil {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  overflow: hidden;
 }
 .location-group {
-  margin-top: 2rem;
+  margin-top: 1rem;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -674,13 +664,15 @@ form label {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  height: 100%;
 }
 .form-preference {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 1rem;
   width: 100%;
+  height: 100%;
 }
 
 /********* Page UpdatePassword *********/
@@ -691,7 +683,6 @@ form label {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 40px;
 }
 
 /* Formulaire stylé et centré */
@@ -780,7 +771,6 @@ h2 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 1rem;
     background: linear-gradient(135deg, #cc5500 50%, #333 50%);
     color: white;
     z-index: 1000;
@@ -797,7 +787,6 @@ h2 {
     width: 50%;
     transform: translateX(100%);
     transition: transform 0.5s ease-in;
-    padding-top: 5rem;
   }
 
   .nav-links li {
@@ -872,7 +861,26 @@ h2 {
     min-width: 150px; /* largeur adaptée au mobile */
     background-color: #333;
   }
+  /* Burger menu pour mobile */
+  .burger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 4px;
+  }
 
+  .burger div {
+    width: 25px;
+    height: 3px;
+    background: white;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+  }
+  /********* Page Newevent *********/
+  .params-newevent .param {
+    flex-direction: column; /* label au-dessus de l’input */
+    flex: 1; /* pour que chaque champ prenne la même largeur */
+  }
   /* Tu peux éventuellement changer l’animation pour un slide horizontal */
   .dropdown.active .dropdown-content {
     display: block;
