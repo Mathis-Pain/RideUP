@@ -20,22 +20,31 @@ func GetSession(sessionID string) (models.Session, error) {
 	defer db.Close()
 
 	var session models.Session
-	var dataJSON string
+	var dataJSON, expiresAtStr, createdAtStr string
 
 	err = db.QueryRow(`
 		SELECT id, user_id, data, expires_at, created_at
 		FROM sessions
 		WHERE id = ?
-	`, sessionID).Scan(&session.ID, &session.UserID, &dataJSON, &session.ExpiresAt, &session.CreatedAt)
+	`, sessionID).Scan(&session.ID, &session.UserID, &dataJSON, &expiresAtStr, &createdAtStr)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			//log.Print("<get-session.go> Erreur dans la récupération de session, aucune session trouvée :", err)
-			return models.Session{}, err
+			return models.Session{}, errors.New("session non trouvée")
 		}
 		return models.Session{}, err
 	}
+	// Conversion manuelle du TEXT en time.Time
+	session.ExpiresAt, err = time.Parse("2006-01-02 15:04:05", expiresAtStr)
+	if err != nil {
+		return models.Session{}, errors.New("format expires_at invalide")
+	}
 
+	session.CreatedAt, err = time.Parse("2006-01-02 15:04:05", createdAtStr)
+	if err != nil {
+		return models.Session{}, errors.New("format created_at invalide")
+	}
+	// Vérificationd'expiration
 	if time.Now().After(session.ExpiresAt) {
 		return models.Session{}, errors.New("session expired")
 	}
@@ -49,19 +58,19 @@ func GetSession(sessionID string) (models.Session, error) {
 }
 
 func GetSessionFromRequest(r *http.Request) (models.Session, error) {
-	var sessionID string
+
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
 		if err == http.ErrNoCookie {
-			return models.Session{}, nil
+			return models.Session{}, errors.New("aucun cokie trouvé")
 		}
 		return models.Session{}, err
 	}
 
-	sessionID = cookie.Value
+	sessionID := cookie.Value
 	session, err := GetSession(sessionID)
 	if err != nil {
-		return models.Session{}, nil
+		return models.Session{}, err
 	}
 
 	return session, nil

@@ -38,8 +38,8 @@ func PreferenceHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Coordonnées par défaut ou de l'utilisateur
 	var data models.MapData
-	err = db.QueryRow(`SELECT latitude, longitude FROM users WHERE id = ?`, session.UserID).
-		Scan(&data.Latitude, &data.Longitude)
+	err = db.QueryRow(`SELECT latitude, longitude, address FROM users WHERE id = ?`, session.UserID).
+		Scan(&data.Latitude, &data.Longitude, &data.Address)
 	if err != nil {
 		log.Println("Erreur récupération coordonnées:", err)
 		data.Latitude = 48.8566

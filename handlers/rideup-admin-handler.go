@@ -9,6 +9,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 var RideUpAdminHtml = template.Must(template.ParseFiles(
@@ -35,13 +36,50 @@ func RideUpAdminHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer db.Close()
-
+	// 🔹 Verifie le status de l'utilisateur
 	isAdmin, err := getdata.IsUserAdmin(db, userID)
 	if err != nil || !isAdmin {
 		// Redirige vers la page d'accueil si pas admin
 		http.Redirect(w, r, "/RideUp", http.StatusSeeOther)
 		return
 	}
+
+	// 🔹 Gérer la suppression manuelle d'un utilisateur
+	if r.Method == http.MethodPost {
+		eventIDStr := r.FormValue("event_id")
+		action := r.FormValue("action")
+
+		if action == "delete" {
+			// Convertir en entier
+			eventID, err := strconv.Atoi(eventIDStr)
+			if err != nil {
+				log.Printf("ID invalide : %v", eventIDStr)
+				http.Error(w, "ID invalide", http.StatusBadRequest)
+				return
+			}
+
+			// Supprimer dans la BDD
+			res, err := db.Exec(`DELETE FROM events WHERE id = ?`, eventID)
+			if err != nil {
+				log.Printf("Erreur suppression événement : %v", err)
+				http.Error(w, "Erreur lors de la suppression", http.StatusInternalServerError)
+				return
+			}
+
+			rowsAffected, _ := res.RowsAffected()
+			if rowsAffected == 0 {
+				w.Header().Set("Content-Type", "application/json")
+				w.Write([]byte(`{"success": false, "message": "Événement non trouvé"}`))
+				return
+			}
+
+			// Succès
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"success": true}`))
+			return
+		}
+	}
+
 	allRows, err := db.Query(`
 	SELECT e.id, e.title, e.description, e.created_by, u.username, e.created_at,
 	       e.latitude, e.longitude, e.address, e.start_datetime, e.end_datetime, e.participants

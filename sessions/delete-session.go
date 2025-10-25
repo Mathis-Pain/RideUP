@@ -1,6 +1,9 @@
 package sessions
 
-import "database/sql"
+import (
+	"database/sql"
+	"log"
+)
 
 // Supprime une session
 func DeleteSession(sessionID string) error {
@@ -22,6 +25,15 @@ func CleanupExpiredSessions() error {
 	}
 	defer db.Close()
 
-	_, err = db.Exec("DELETE FROM sessions WHERE expires_at < CURRENT_TIMESTAMP")
-	return err
+	res, err := db.Exec(`
+		DELETE FROM sessions
+		WHERE datetime(expires_at) < datetime('now')
+	`)
+	if err != nil {
+		return err
+	}
+	count, _ := res.RowsAffected()
+	log.Printf("🧹 Sessions expirées supprimées : %d\n", count)
+	return nil
+
 }

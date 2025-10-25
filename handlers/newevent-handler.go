@@ -5,7 +5,6 @@ import (
 	"RideUP/sessions"
 	"RideUP/utils"
 	"database/sql"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -38,12 +37,13 @@ func NewEventHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Coordonnées par défaut ou de l'utilisateur
 	var data models.MapData
-	err = db.QueryRow(`SELECT latitude, longitude FROM users WHERE id = ?`, session.UserID).
-		Scan(&data.Latitude, &data.Longitude)
+	err = db.QueryRow(`SELECT latitude, longitude, address FROM users WHERE id = ?`, session.UserID).
+		Scan(&data.Latitude, &data.Longitude, &data.Address)
 	if err != nil {
 		log.Println("Erreur récupération coordonnées:", err)
 		data.Latitude = 48.8566
 		data.Longitude = 2.3522
+		data.Address = "22 Place Saint-Marc, 76000 Rouen, France"
 	}
 
 	if r.Method == http.MethodPost {
@@ -84,44 +84,52 @@ func NewEventHandler(w http.ResponseWriter, r *http.Request) {
 		var lat, lon float64
 		var finalAddress string
 
+		// Cas 1 : l'utilisateur a cliqué sur la carte → on a lat/lon
 		if latStr != "" && lonStr != "" {
-			// Coordonnées via carte (prioritaire)
 			lat, err = strconv.ParseFloat(latStr, 64)
 			if err != nil {
 				log.Printf("Erreur parsing latitude: %v", err)
 				http.Error(w, "Coordonnées invalides", http.StatusBadRequest)
 				return
 			}
+
 			lon, err = strconv.ParseFloat(lonStr, 64)
 			if err != nil {
 				log.Printf("Erreur parsing longitude: %v", err)
 				http.Error(w, "Coordonnées invalides", http.StatusBadRequest)
 				return
 			}
-			// Si une adresse est fournie (via géocodage inversé JS), on l'utilise
+
+			// Si l'utilisateur a renseigné une adresse, on l'utilise, sinon on met son adresse par défaut
 			if address != "" {
 				finalAddress = address
 			} else {
-				finalAddress = fmt.Sprintf("Lat: %.6f, Lon: %.6f", lat, lon)
+				finalAddress = data.Address
 			}
 
+			// Cas 2 : l'utilisateur n'a pas cliqué sur la carte mais a renseigné une adresse
 		} else if address != "" {
-			// Géocodage adresse uniquement si pas de coordonnées
-			lat, lon, err = utils.GeocodeAddress(address)
+			lat, lon, err = utils.GeocodeAddress(address) // géocodage classique
 			if err != nil {
 				log.Printf("Erreur géocodage : %v", err)
-				http.Error(w, "Adresse introuvable. Veuillez vérifier l'orthographe ou utiliser la carte.", http.StatusBadRequest)
+				http.Error(w, "Adresse introuvable. Veuillez vérifier l'orthographe.", http.StatusBadRequest)
 				return
 			}
 			finalAddress = address
+
+			// Cas 3 : ni adresse ni coordonnées → utiliser les coordonnées et adresse par défaut de l'utilisateur
+		} else {
+			lat = data.Latitude
+			lon = data.Longitude
+			finalAddress = data.Address
 		}
 
 		log.Printf("INFO - Création événement: %s à %s [%.6f, %.6f]", title, finalAddress, lat, lon)
 
-		// Insertion dans la base de données avec l'adresse
+		// Insertion dans la base de données
 		_, err = db.Exec(`
-			INSERT INTO events (title, created_by, latitude, longitude, address, start_datetime)
-			VALUES (?, ?, ?, ?, ?, ?)`,
+    INSERT INTO events (title, created_by, latitude, longitude, address, start_datetime)
+    VALUES (?, ?, ?, ?, ?, ?)`,
 			title, session.UserID, lat, lon, finalAddress, startDatetime)
 		if err != nil {
 			log.Printf("ERREUR : insertion event: %v", err)
@@ -131,7 +139,6 @@ func NewEventHandler(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("✅ Événement créé avec succès: %s", title)
 		http.Redirect(w, r, "/RideUp", http.StatusSeeOther)
-		return
 	}
 
 	// Affichage du formulaire
