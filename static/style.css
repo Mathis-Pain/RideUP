@@ -814,6 +814,10 @@ body-rideupadmin {
     margin: 0;
     padding: 0;
   }
+  .error-title {
+    text-align: center;
+  }
+
   main {
     flex: 1;
     display: flex;
