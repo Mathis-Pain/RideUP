@@ -761,7 +761,13 @@ body-rideupadmin {
 .global-information {
   width: 50%;
 }
-
+.set-of-event {
+  flex: 1; /* prend l’espace dispo */
+  max-height: 90vh; /* limite la hauteur */
+  overflow-y: auto; /* active le scroll vertical si besoin */
+  padding: 1rem;
+  box-sizing: border-box;
+}
 .cards-container {
   display: flex;
   flex-direction: column;
@@ -941,5 +947,30 @@ body-rideupadmin {
       opacity: 1;
       transform: translateX(0);
     }
+  }
+  /********* Page RideUPadmin *********/
+  .main-rideupadmin {
+    display: flex;
+    flex-direction: column;
+  }
+  .set-of-event,
+  .global-information {
+    width: 100%;
+  }
+  .global-information {
+    order: -1;
+  }
+  .main-rideupadmin .information {
+    display: flex; /* active flex sur le container */
+    justify-content: space-between; /* espace entre h3 et p */
+    align-items: center; /* centre verticalement si besoin */
+    width: 100%; /* pour occuper tout le container parent */
+    margin-bottom: 10px; /* optionnel pour espacer les lignes */
+  }
+
+  .main-rideupadmin .information h3,
+  .main-rideupadmin .information p {
+    width: auto; /* laisse le flex gérer la taille, ou mettre un max-width si nécessaire */
+    margin: 0; /* supprime les marges par défaut */
   }
 }
