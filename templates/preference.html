@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
   {{template "InitHead" .}}
-  <body class="body-rideup">
+  <body class="body-profil">
     {{template "InitNav" .}}
     <main class="main-profil">
       <h2>Paramètre de recherche :</h2>
       <section class="userposition">
-        <form class="form-profil" method="POST" action="/Profil">
+        <form class="form-preference" method="POST" action="/Preference">
           <div class="form-group">
             <div class="location-group">
               <label for="Location" id="location"
@@ -16,7 +16,7 @@
                 type="text"
                 id="address"
                 name="addressuser"
-                placeholder="entrer l'adresse"
+                placeholder="{{.Address}}"
               />
             </div>
             <input type="hidden" id="latitude" name="latitude" value="" />
@@ -48,5 +48,6 @@
     {{template "InitFooter" .}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <script src="/static/js/slider.js"></script>
+    <script src="/static/js/nav.js"></script>
   </body>
 </html>

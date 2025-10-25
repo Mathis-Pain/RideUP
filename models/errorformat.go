@@ -14,3 +14,9 @@ type User struct {
 	ProfilPic string
 	Status    string
 }
+
+type UpdatePassword struct {
+	OldPasswordError        string
+	NewPasswordError        string
+	ConfirmNewPasswordError string
+}

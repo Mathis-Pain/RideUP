@@ -22,7 +22,9 @@ Que tu sois amateur de virées tranquilles ou adepte de routes sinueuses, RideUp
 💡💡 Possible d'usage également dans les clubs sport ou autres
 
 
-
+🧠 "Le principe de ce projet est d’appliquer les connaissances acquises jusqu’à présent pour créer une première version de l’application
+ et conserver un historique de mes compétences à ce stade. Le projet évoluera ensuite en fonction de mon apprentissage,
+  avec notamment l’ajout de la sécurité et des bonnes pratiques DevOps, jusqu’à obtenir une version prête pour la production."
 
 ‼️ voir les modalitées d'utilisation de map en cas de mise en prod
 

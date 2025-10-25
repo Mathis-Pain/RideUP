@@ -27,7 +27,12 @@ func InitRoutes() *http.ServeMux {
 	mux.Handle("/RideUp", middleware.AuthMiddleware(http.HandlerFunc(handlers.RideUpHandler)))
 	mux.Handle("/NewEvent", middleware.AuthMiddleware(http.HandlerFunc(handlers.NewEventHandler)))
 	mux.HandleFunc("/JoinEvent", handlers.JoinEventHandler)
-	mux.Handle("/Profil", middleware.AuthMiddleware(http.HandlerFunc(handlers.ProfilHandler)))
+	mux.Handle("/Preference", middleware.AuthMiddleware(http.HandlerFunc(handlers.PreferenceHandler)))
+	mux.Handle("/UpdatePassword", middleware.AuthMiddleware(http.HandlerFunc(handlers.UpdatePasswordHandler)))
+	mux.Handle("/Admin", middleware.AuthMiddleware(middleware.AdminOnly(http.HandlerFunc(handlers.RideUpAdminHandler))))
+	// charger par le js dans navbar
+	mux.HandleFunc("/api/check-admin", handlers.CheckAdminHandler)
+
 	// Authentification par google ou github
 	mux.HandleFunc("/auth/google/login", authextern.HandleGoogleLogin)
 	mux.HandleFunc("/auth/google/callback", authextern.HandleGoogleCallback)

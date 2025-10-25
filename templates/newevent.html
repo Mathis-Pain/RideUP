@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
   {{template "InitHead" .}}
   <body class="body-newevent">
     {{template "InitNav" .}}
@@ -36,11 +36,21 @@
             type="text"
             id="address"
             name="address"
-            placeholder="entrer l'adresse"
+            placeholder="{{.Address}}"
           />
 
-          <input type="hidden" id="latitude" name="latitude" value="" />
-          <input type="hidden" id="longitude" name="longitude" value="" />
+          <input
+            type="hidden"
+            id="latitude"
+            name="latitude"
+            value="{{.Latitude}}"
+          />
+          <input
+            type="hidden"
+            id="longitude"
+            name="longitude"
+            value="{{.Longitude}}"
+          />
         </div>
 
         <!-- Carte -->
@@ -54,5 +64,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <!-- Script spécifique NewEvent -->
     <script src="/static/js/newevent.js"></script>
+    <script src="/static/js/nav.js"></script>
   </body>
 </html>

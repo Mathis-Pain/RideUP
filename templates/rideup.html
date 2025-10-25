@@ -11,7 +11,10 @@
         <div class="cards-container">
           {{range .UserEvents}}
           <div class="card">
-            <h3>{{.Title}}</h3>
+            <div class="title-creatorname">
+              <h3>{{.Title}}</h3>
+              <p class="creatorname">{{.CreatorName}}</p>
+            </div>
 
             <p><strong>Date :</strong>{{.FormattedStart}}</p>
             <p>
@@ -21,6 +24,8 @@
             {{if .Description.Valid}}
             <p>{{.Description.String}}</p>
             {{end}}
+           <div class="btn-participants">
+            <button class="join-btn" data-event-id="{{.ID}}">SUPPRIMER</button>
             <span class="user-participants">
               <img
                 src="/static/images/icone-participant.png"
@@ -30,10 +35,13 @@
               {{if .Participants.Valid}}{{.Participants.Int64}}{{else}}0{{end}}
             </span>
           </div>
+          </div>
+          </div>
           {{else}}
           <p>Aucune sortie créée pour le moment.</p>
           {{end}}
         </div>
+     
       </section>
 
       <!-- Colonne droite : sorties disponibles -->
@@ -42,7 +50,10 @@
         <div class="cards-container">
           {{range .AvailableEvents}}
           <div class="card">
-            <h3>{{.Title}}</h3>
+            <div class="title-creatorname">
+              <h3>{{.Title}}</h3>
+              <p class="creatorname">{{.CreatorName}}</p>
+            </div>
             <p><strong>Date :</strong>{{.FormattedStart}}</p>
             <p>
               <strong>Lieu :</strong>
@@ -64,6 +75,7 @@
                 {{if
                 .Participants.Valid}}{{.Participants.Int64}}{{else}}0{{end}}
               </span>
+              </div>
             </div>
           </div>
           {{else}}
@@ -74,5 +86,7 @@
     </main>
 
     {{template "InitFooter" .}}
+    <script src="/static/js/rideup.js" defer></script>
+      <script src="/static/js/nav.js"></script>
   </body>
 </html>

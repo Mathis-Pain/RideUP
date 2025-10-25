@@ -10,7 +10,7 @@ CREATE TABLE users (
   longitude DOUBLE PRECISION DEFAULT 1.10160,
    role_id INTEGER NOT NULL DEFAULT 3,
     google_id TEXT UNIQUE,
-    address TEXT,
+    address TEXT DEFAULT '22 Place Saint-Marc, 76000 Rouen',
     preference INTEGER DEFAULT 50
 );
 
@@ -44,8 +44,8 @@ CREATE TABLE sessions (
     id TEXT PRIMARY KEY,
     user_id INTEGER,
     data TEXT,                    -- Données de session sérialisées en JSON
-    expires_at TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    expires_at TEXT,
+    created_at TEXT DEFAULT (datetime('now'))
 );
 CREATE TABLE events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -2,6 +2,7 @@ package sessions
 
 import (
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -18,9 +19,16 @@ func IsValidSession(sessionID string) bool {
 		return false
 	}
 
-	// Vérifier que la session n’est pas expirée
-	if session.ExpiresAt.Before(time.Now()) {
-		fmt.Println("Session expirée")
+	// Si ExpiresAt est zéro, c'est souvent signe que GetSession n'a pas parsé la date
+	if session.ExpiresAt.IsZero() {
+		log.Println("IsValidSession: ExpiresAt is zero -> vérifier GetSession (parsing de expires_at)")
+		return false
+	}
+
+	// Comparaison : utiliser UTC si vous stockez en UTC
+	now := time.Now()
+	if session.ExpiresAt.Before(now) {
+		log.Printf("IsValidSession: session expirée (expires_at=%v now=%v)\n", session.ExpiresAt, now)
 		return false
 	}
 

@@ -17,12 +17,15 @@ func SaveSession(db *sql.DB, session models.Session) error {
 	if err != nil {
 		return err
 	}
+	// ✅ Conversion de time.Time vers un format lisible par SQLite
+	expiresAtStr := session.ExpiresAt.Format("2006-01-02 15:04:05")
+	createdAtStr := session.CreatedAt.Format("2006-01-02 15:04:05")
 
 	_, err = db.Exec(`
 		INSERT OR REPLACE INTO sessions
 		(id, user_id, data, expires_at, created_at)
 		VALUES (?, ?, ?, ?, ?)
-	`, session.ID, session.UserID, string(dataJSON), session.ExpiresAt, session.CreatedAt)
+	`, session.ID, session.UserID, string(dataJSON), expiresAtStr, createdAtStr)
 
 	return err
 }

@@ -25,7 +25,7 @@ func main() {
 	// Nettoyage des sessions expirées toutes les 5 minutes
 	go func() {
 		for {
-			time.Sleep(5 * time.Minute)
+			time.Sleep(30 * time.Minute)
 			sessions.CleanupExpiredSessions()
 		}
 	}()
