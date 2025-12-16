@@ -20,14 +20,15 @@ var NewEventHtml = template.Must(template.ParseFiles(
 ))
 
 func NewEventHandler(w http.ResponseWriter, r *http.Request) {
-	// Récupère l'utilisateur connecté
+	// Vérifier user connecté
 	session, err := sessions.GetSessionFromRequest(r)
 	if err != nil {
-		log.Printf("Erreur pas d'utilisateur connecté")
+		log.Printf("Erreur : aucun utilisateur connecté")
 		http.Redirect(w, r, "/Connect", http.StatusSeeOther)
 		return
 	}
 
+	// DB
 	db, err := sql.Open("sqlite3", "./data/RideUp.db")
 	if err != nil {
 		utils.InternalServError(w)
@@ -35,7 +36,7 @@ func NewEventHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	// Coordonnées par défaut ou de l'utilisateur
+	// Coordonnées par défaut utilisateur
 	var data models.MapData
 	err = db.QueryRow(`SELECT latitude, longitude, address FROM users WHERE id = ?`, session.UserID).
 		Scan(&data.Latitude, &data.Longitude, &data.Address)
@@ -46,105 +47,119 @@ func NewEventHandler(w http.ResponseWriter, r *http.Request) {
 		data.Address = "22 Place Saint-Marc, 76000 Rouen, France"
 	}
 
+	// ---------------------------
+	// FORMULAIRE POST
+	// ---------------------------
 	if r.Method == http.MethodPost {
+
 		if err := r.ParseForm(); err != nil {
-			log.Printf("ERREUR : ParseForm: %v", err)
-			http.Error(w, "Erreur lors de la lecture du formulaire", http.StatusBadRequest)
+			log.Printf("ERREUR ParseForm: %v", err)
+			http.Error(w, "Erreur formulaire", http.StatusBadRequest)
 			return
 		}
 
 		title := r.FormValue("title")
 		dateStr := r.FormValue("date")
 		timeStr := r.FormValue("time")
-		address := r.FormValue("address")  // Adresse (peut être vide si coords directes)
-		latStr := r.FormValue("latitude")  // Champs hidden carte
-		lonStr := r.FormValue("longitude") // Champs hidden carte
+		address := r.FormValue("address")
+		latStr := r.FormValue("latitude")
+		lonStr := r.FormValue("longitude")
 
 		if title == "" || dateStr == "" || timeStr == "" {
 			http.Error(w, "Le titre, la date et l'heure sont obligatoires", http.StatusBadRequest)
 			return
 		}
 
-		// Vérifier qu'on a soit une adresse, soit des coordonnées
 		if address == "" && (latStr == "" || lonStr == "") {
-			http.Error(w, "Veuillez saisir une adresse ou sélectionner un point sur la carte", http.StatusBadRequest)
+			http.Error(w, "Veuillez renseigner une adresse ou un point sur la carte", http.StatusBadRequest)
 			return
 		}
 
-		// Conversion date + heure en time.Time
+		// ---------------------------
+		// 1) PARSE DATE HEURE EN FRANCE
+		// ---------------------------
 		startStr := dateStr + " " + timeStr
-		startDatetime, err := time.Parse("2006-01-02 15:04", startStr)
+		locParis, _ := time.LoadLocation("Europe/Paris")
+
+		// Parse en fuseau France (IMPORTANT)
+		startDatetimeParis, err := time.ParseInLocation("2006-01-02 15:04", startStr, locParis)
 		if err != nil {
-			log.Printf("ERREUR : parsing datetime: %v", err)
+			log.Printf("ERREUR parsing datetime France : %v", err)
 			http.Error(w, "Date ou heure invalide", http.StatusBadRequest)
 			return
 		}
 
-		// Récupération des coordonnées et de l'adresse finale
+		// Conversion UTC pour stockage
+		startDatetimeUTC := startDatetimeParis.UTC()
+
+		// ---------------------------
+		// RÉCUPÉRATION ADRESSE + COORDS
+		// ---------------------------
 		var lat, lon float64
 		var finalAddress string
 
-		// Cas 1 : l'utilisateur a cliqué sur la carte → on a lat/lon
+		// Cas 1 : coordonnées présentes → clique carte
 		if latStr != "" && lonStr != "" {
 			lat, err = strconv.ParseFloat(latStr, 64)
 			if err != nil {
-				log.Printf("Erreur parsing latitude: %v", err)
-				http.Error(w, "Coordonnées invalides", http.StatusBadRequest)
+				http.Error(w, "Latitude invalide", http.StatusBadRequest)
 				return
 			}
 
 			lon, err = strconv.ParseFloat(lonStr, 64)
 			if err != nil {
-				log.Printf("Erreur parsing longitude: %v", err)
-				http.Error(w, "Coordonnées invalides", http.StatusBadRequest)
+				http.Error(w, "Longitude invalide", http.StatusBadRequest)
 				return
 			}
 
-			// Si l'utilisateur a renseigné une adresse, on l'utilise, sinon on met son adresse par défaut
 			if address != "" {
 				finalAddress = address
 			} else {
 				finalAddress = data.Address
 			}
 
-			// Cas 2 : l'utilisateur n'a pas cliqué sur la carte mais a renseigné une adresse
+			// Cas 2 : adresse manuelle
 		} else if address != "" {
-			lat, lon, err = utils.GeocodeAddress(address) // géocodage classique
+			lat, lon, err = utils.GeocodeAddress(address)
 			if err != nil {
-				log.Printf("Erreur géocodage : %v", err)
-				http.Error(w, "Adresse introuvable. Veuillez vérifier l'orthographe.", http.StatusBadRequest)
+				http.Error(w, "Adresse introuvable", http.StatusBadRequest)
 				return
 			}
 			finalAddress = address
 
-			// Cas 3 : ni adresse ni coordonnées → utiliser les coordonnées et adresse par défaut de l'utilisateur
+			// Cas 3 : rien fourni → coordonnées user
 		} else {
 			lat = data.Latitude
 			lon = data.Longitude
 			finalAddress = data.Address
 		}
 
-		log.Printf("INFO - Création événement: %s à %s [%.6f, %.6f]", title, finalAddress, lat, lon)
-
-		// Insertion dans la base de données
+		// ---------------------------
+		// INSERT DATABASE (UTC)
+		// ---------------------------
 		_, err = db.Exec(`
-    INSERT INTO events (title, created_by, latitude, longitude, address, start_datetime)
-    VALUES (?, ?, ?, ?, ?, ?)`,
-			title, session.UserID, lat, lon, finalAddress, startDatetime)
+            INSERT INTO events (title, created_by, latitude, longitude, address, start_datetime)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `, title, session.UserID, lat, lon, finalAddress, startDatetimeUTC)
+
 		if err != nil {
-			log.Printf("ERREUR : insertion event: %v", err)
+			log.Printf("ERREUR insertion event: %v", err)
 			http.Error(w, "Impossible de créer l'événement", http.StatusInternalServerError)
 			return
 		}
 
-		log.Printf("✅ Événement créé avec succès: %s", title)
+		log.Printf("✅ Événement créé avec succès: %s (%s)", title, startDatetimeParis.Format("15:04"))
+
 		http.Redirect(w, r, "/RideUp", http.StatusSeeOther)
+		return
 	}
 
-	// Affichage du formulaire
+	// ---------------------------
+	// AFFICHAGE FORMULAIRE
+	// ---------------------------
 	err = NewEventHtml.Execute(w, data)
 	if err != nil {
-		log.Printf("Erreur lors de l'exécution du template NewEventHtml: %v", err)
+		log.Printf("Erreur template NewEventHtml: %v", err)
 		utils.NotFoundHandler(w)
 	}
 }
