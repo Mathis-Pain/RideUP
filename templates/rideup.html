@@ -11,6 +11,7 @@
         data-lat="{{.Latitude}}"
         data-lon="{{.Longitude}}"
         data-events="{{.EventsJSON}}"
+        data-user-id="{{.UserID}}"
       ></div>
 
       <div class="section-event-list">
@@ -21,6 +22,9 @@
             {{range .AvailableEvents}}
             <div
               class="card {{if eq .CreatedBy $.UserID}}my-event{{else}}other-event{{end}}"
+              data-event-id="{{.ID}}"
+              data-lat="{{.Latitude}}"
+              data-lon="{{.Longitude}}"
             >
               <div class="title-creatorname">
                 <h3>{{.Title}}</h3>
@@ -54,7 +58,7 @@
                   class="join-btn {{if .UserJoined}}joined{{end}}"
                   data-event-id="{{.ID}}"
                 >
-                  {{if .UserJoined}}❌ QUITTER{{else}}✅ REJOINDRE{{end}}
+                  {{if .UserJoined}} QUITTER{{else}} REJOINDRE{{end}}
                 </button>
                 {{end}}
 

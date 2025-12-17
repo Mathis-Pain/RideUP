@@ -1,46 +1,41 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const buttons = document.querySelectorAll(".join-btn");
-  console.log("Nombre de boutons trouvés :", buttons.length);
   const mapDiv = document.getElementById("map");
-
-  // Récupère les coordonnées du dataset HTML
   const lat = parseFloat(mapDiv.dataset.lat) || 48.8566;
   const lon = parseFloat(mapDiv.dataset.lon) || 2.3522;
+  const currentUserId = parseInt(mapDiv.dataset.userId);
 
-  // Initialisation de la carte Leaflet
-  const map = L.map("map").setView([lat, lon], 13);
+  // initilalisation de la map coordonée et zoom
+  const map = L.map("map").setView([lat, lon], 8);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution: "&copy; OpenStreetMap contributors",
   }).addTo(map);
 
-  // Marqueur de position actuelle (bleu)
   L.marker([lat, lon]).addTo(map).bindPopup("📍 Votre position").openPopup();
 
-  // Récupérer et afficher les événements disponibles sur la carte
+  //  STOCKAGE DES MARQUEURS POUR Y ACCÉDER PLUS TARD
+  const markers = {};
+
   try {
+    // dataset genere automatiquement par le navigateur data-events → dataset.event
     const eventsData = mapDiv.dataset.events;
-    console.log("🔍 Data brute:", eventsData);
 
     if (eventsData) {
       const events = JSON.parse(eventsData);
-      console.log("✅ Events parsés:", events);
 
-      // 🟢 BOUCLE AVEC ICÔNE CONDITIONNELLE
       events.forEach((event) => {
-        console.log("📌 Traitement event:", event);
-
         if (event.latitude && event.longitude) {
-          // ✅ CHOIX DE L'ICÔNE SELON user_joined
-          const iconColor = event.user_joined ? "violet" : "red";
-          const iconUrl = `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${iconColor}.png`;
+          let iconColor;
+          if (event.created_by === currentUserId) {
+            iconColor = "green";
+          } else if (event.user_joined) {
+            iconColor = "violet";
+          } else {
+            iconColor = "red";
+          }
 
-          console.log(
-            `🎨 Event ${event.id}: ${
-              event.user_joined ? "REJOINT (violet)" : "NON REJOINT (rouge)"
-            }`
-          );
+          const iconUrl = `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${iconColor}.png`;
 
           const marker = L.marker([event.latitude, event.longitude], {
             icon: L.icon({
@@ -54,60 +49,111 @@ document.addEventListener("DOMContentLoaded", () => {
             }),
           }).addTo(map);
 
-          // 🟢 Conversion correcte UTC → Paris
-          let formattedDate = "Date non définie";
+          // STOCKE LE MARQUEUR AVEC L'ID DE L'ÉVÉNEMENT
+          markers[event.id] = marker;
 
-          if (event.start_datetime) {
-            const date = new Date(event.start_datetime);
-
-            formattedDate = date
-              .toLocaleString("fr-FR", {
-                timeZone: "Europe/Paris",
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-              .replace(",", " à");
-
-            formattedDate = `le ${formattedDate}`;
+          let formattedStart = "Non défini";
+          if (event.start_time) {
+            const date = new Date(event.start_time);
+            formattedStart = date.toLocaleString("fr-FR", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            });
           }
 
-          const popupContent = `
-            <div class="event-popup">
-              <h4>${event.title || "Sans titre"}</h4>
-              <p><strong>Créateur:</strong> ${
-                event.creator_name || "Inconnu"
-              }</p>
-              <p><strong>Date:</strong> ${formattedDate}</p>
-              <p><strong>Lieu:</strong> ${event.address || "Non précisé"}</p>
-              ${event.description ? `<p>${event.description}</p>` : ""}
-              <p><strong>Participants:</strong> ${event.participants || 0}</p>
-              <button class="join-btn-popup" data-event-id="${event.id}">
-                ${event.user_joined ? "Annuler" : "Rejoindre"}
-              </button>
-            </div>
+          let popupContent = `
+            <div style="max-width: 300px;">
+              <h3 style="margin: 0 0 10px 0; color: #333;">${event.title}</h3>
+              <p style="margin: 5px 0;"><strong>📅 Date :</strong> ${formattedStart}</p>
+              <p style="margin: 5px 0;"><strong>📍 Lieu :</strong> ${event.address}</p>
+              <p style="margin: 5px 0;"><strong>👤 Organisateur :</strong> ${event.creator_name}</p>
           `;
 
+          if (event.description) {
+            popupContent += `<p style="margin: 10px 0 5px 0;"><strong>Description :</strong></p><p style="margin: 0;">${event.description}</p>`;
+          }
+
+          popupContent += `<p style="margin: 10px 0 5px 0;"><strong>👥 Participants :</strong> ${event.participants}</p>`;
+
+          if (event.created_by !== currentUserId) {
+            const buttonText = event.user_joined ? "QUITTER" : "REJOINDRE";
+            const buttonClass = event.user_joined ? "joined" : "";
+            popupContent += `
+              <button class="join-btn-popup ${buttonClass}" data-event-id="${
+              event.id
+            }" style="
+                margin-top: 10px;
+                padding: 8px 16px;
+                background-color: ${event.user_joined ? "#dc3545" : "#007bff"};
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+              ">${buttonText}</button>
+            `;
+          }
+
+          popupContent += `</div>`;
+
           marker.bindPopup(popupContent);
-        } else {
-          console.warn("⚠️ Event sans coordonnées:", event);
         }
       });
-
-      console.log(`✅ ${events.length} marqueurs ajoutés à la carte`);
-    } else {
-      console.warn("⚠️ Aucune donnée d'événements trouvée");
     }
   } catch (error) {
-    console.error("❌ Erreur lors du chargement des événements:", error);
+    console.error("❌ Erreur lors du parsing des events:", error);
   }
 
-  // Gestion des clics sur les boutons (existant + nouveaux dans les popups)
+  // ✅ NOUVELLE FONCTIONNALITÉ : CLIC SUR UNE CARD
+  document.querySelectorAll(".card").forEach((card) => {
+    card.addEventListener("click", (e) => {
+      // Ignore le clic si c'est un bouton
+      if (
+        e.target.classList.contains("join-btn") ||
+        e.target.classList.contains("delete-btn") ||
+        e.target.closest(".join-btn") ||
+        e.target.closest(".delete-btn")
+      ) {
+        return;
+      }
+
+      const eventId = parseInt(card.dataset.eventId);
+      const cardLat = parseFloat(card.dataset.lat);
+      const cardLon = parseFloat(card.dataset.lon);
+
+      console.log(
+        `🎯 Card cliquée: Event ${eventId} à [${cardLat}, ${cardLon}]`
+      );
+
+      if (markers[eventId] && !isNaN(cardLat) && !isNaN(cardLon)) {
+        // ✅ CENTRE LA CARTE AVEC OFFSET (pour ne pas cacher le marqueur sous la popup)
+        map.setView([cardLat, cardLon], 16, {
+          animate: true,
+          duration: 0.5,
+        });
+
+        // ✅ OUVRE LA POPUP APRÈS UN LÉGER DÉLAI (pour que le centrage soit visible)
+        setTimeout(() => {
+          markers[eventId].openPopup();
+        }, 300);
+
+        // ✅ SCROLL VERS LA CARTE (optionnel)
+        document.getElementById("map").scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+    });
+  });
+
+  // ✅ GESTION DES BOUTONS
   document.addEventListener("click", async (e) => {
     if (
       e.target.classList.contains("join-btn") ||
+      e.target.classList.contains("delete-btn") ||
       e.target.classList.contains("join-btn-popup")
     ) {
       const btn = e.target;
@@ -115,9 +161,31 @@ document.addEventListener("DOMContentLoaded", () => {
       const action = btn.textContent.trim().toLowerCase();
       console.log("Action détectée :", action, "pour event", eventId);
 
+      // ✅ CENTRAGE SUR LA CARTE AVANT L'ACTION
+      const card = btn.closest(".card");
+      if (card) {
+        const cardLat = parseFloat(card.dataset.lat);
+        const cardLon = parseFloat(card.dataset.lon);
+
+        if (markers[eventId] && !isNaN(cardLat) && !isNaN(cardLon)) {
+          map.setView([cardLat, cardLon], 16, {
+            animate: true,
+            duration: 0.5,
+          });
+
+          setTimeout(() => {
+            markers[eventId].openPopup();
+          }, 300);
+
+          document.getElementById("map").scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }
+      }
+
       try {
-        // 🔹 Suppression d'un événement (propriétaire)
-        if (action === "supprimer") {
+        if (action.includes("supprimer")) {
           if (!confirm("Voulez-vous vraiment supprimer cet événement ?"))
             return;
 
@@ -137,12 +205,10 @@ document.addEventListener("DOMContentLoaded", () => {
           } else {
             alert("Impossible de supprimer cet événement.");
           }
-
           return;
         }
 
-        // 🔹 Gestion du join / leave
-        const actionType = action === "rejoindre" ? "join" : "leave";
+        const actionType = action.includes("rejoindre") ? "join" : "leave";
         const response = await fetch("/JoinEvent", {
           method: "POST",
           headers: {"Content-Type": "application/x-www-form-urlencoded"},

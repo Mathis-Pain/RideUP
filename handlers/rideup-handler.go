@@ -31,7 +31,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	userID := session.UserID
 
-	// DB
+	//  DB
 	db, err := sql.Open("sqlite3", "./data/RideUp.db")
 	if err != nil {
 		utils.InternalServError(w)
@@ -42,11 +42,12 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	// Suppression événements passés
 	db.Exec(`DELETE FROM events WHERE datetime(start_datetime) < datetime('now')`)
 
-	// Suppression manuelle
+	// Suppression manuelle envoyé par rideup.js via le post js
 	if r.Method == http.MethodPost {
 		eventID := r.FormValue("event_id")
 		action := r.FormValue("action")
 
+		// securisation du delete via userID
 		if action == "delete" {
 			db.Exec(`DELETE FROM events WHERE id = ? AND created_by = ?`, eventID, userID)
 			w.Header().Set("Content-Type", "application/json")
@@ -56,8 +57,9 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ---------------------------
-	// RÉCUPÉRER POSITION + PRÉFÉRENCES
+	//  RÉCUPÉRER POSITION + PRÉFÉRENCES
 	// ---------------------------
+
 	var userLat, userLon float64
 	var pref int
 
@@ -72,12 +74,13 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 		pref = 50
 	}
 
-	// Fuseau France
+	//  Fuseau France
 	locParis, _ := time.LoadLocation("Europe/Paris")
 
 	// ---------------------------
-	// ÉVÉNEMENTS DE L'UTILISATEUR
+	//  ÉVÉNEMENTS DE L'UTILISATEUR
 	// ---------------------------
+	// ASC tri ascendant "e" alias
 	userRows, err := db.Query(`
         SELECT e.id, e.title, e.description, e.created_by, u.username, e.created_at,
                e.latitude, e.longitude, e.address, e.start_datetime, e.end_datetime, e.participants
@@ -102,7 +105,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 		err := userRows.Scan(
 			&e.ID,
 			&e.Title,
-			&e.Description, // ✅ sql.NullString direct
+			&e.Description,
 			&e.CreatedBy,
 			&e.CreatorName,
 			&e.CreatedAt,
@@ -111,28 +114,28 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 			&e.Address,
 			&e.StartDatetime,
 			&endDatetimeStr,
-			&participantsNull, // ✅ Scan dans sql.NullInt64
+			&participantsNull,
 		)
 		if err != nil {
 			log.Printf("❌ Erreur scan userEvent: %v", err)
 			continue
 		}
 
-		// ✅ Convertir participants en int
+		//  Convertir participants en int
 		if participantsNull.Valid {
 			e.Participants = int(participantsNull.Int64)
 		} else {
 			e.Participants = 0
 		}
 
-		// ✅ Remplir DescriptionStr pour JSON
+		//  Remplir DescriptionStr pour JSON
 		if e.Description.Valid {
 			e.DescriptionStr = e.Description.String
 		} else {
 			e.DescriptionStr = ""
 		}
 
-		// ✅ Conversion end_datetime
+		//  Conversion end_datetime
 		if endDatetimeStr.Valid {
 			endTime, err := time.Parse("2006-01-02 15:04:05", endDatetimeStr.String)
 			if err == nil {
@@ -140,7 +143,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		// ✅ Conversion France pour HTML
+		//  Conversion France pour HTML
 		e.StartDatetime = e.StartDatetime.In(locParis)
 		e.FormattedStart = e.StartDatetime.Format("le 02/01/2006 à 15:04")
 
@@ -149,11 +152,11 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 			e.EndDatetime = &t
 		}
 
-		// ✅ Vérifier si rejoint
+		//  Vérifier si rejoint (créateur auto-rejoint)
 		var count int
 		db.QueryRow(`SELECT COUNT(*) FROM event_participants WHERE user_id = ? AND event_id = ?`,
 			userID, e.ID).Scan(&count)
-		e.UserJoined = count > 0
+		e.UserJoined = count > 0 || e.CreatedBy == userID // ✅ AJOUT ICI
 
 		userEvents = append(userEvents, e)
 	}
@@ -161,7 +164,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("✅ Événements utilisateur: %d", len(userEvents))
 
 	// ---------------------------
-	// TOUS LES ÉVÉNEMENTS
+	//  TOUS LES ÉVÉNEMENTS
 	// ---------------------------
 	allRows, err := db.Query(`
         SELECT e.id, e.title, e.description, e.created_by, u.username, e.created_at,
@@ -187,7 +190,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 		err := allRows.Scan(
 			&e.ID,
 			&e.Title,
-			&e.Description, // ✅ sql.NullString direct
+			&e.Description,
 			&e.CreatedBy,
 			&e.CreatorName,
 			&e.CreatedAt,
@@ -196,28 +199,28 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 			&e.Address,
 			&e.StartDatetime,
 			&endDatetimeStr,
-			&participantsNull, // ✅ Scan dans sql.NullInt64
+			&participantsNull,
 		)
 		if err != nil {
 			log.Printf("❌ Erreur scan allEvent: %v", err)
 			continue
 		}
 
-		// ✅ Convertir participants en int
+		//  Convertir participants en int
 		if participantsNull.Valid {
 			e.Participants = int(participantsNull.Int64)
 		} else {
 			e.Participants = 0
 		}
 
-		// ✅ Remplir DescriptionStr pour JSON
+		//  Remplir DescriptionStr pour JSON
 		if e.Description.Valid {
 			e.DescriptionStr = e.Description.String
 		} else {
 			e.DescriptionStr = ""
 		}
 
-		// ✅ Conversion end_datetime
+		//  Conversion end_datetime
 		if endDatetimeStr.Valid {
 			endTime, err := time.Parse("2006-01-02 15:04:05", endDatetimeStr.String)
 			if err == nil {
@@ -225,13 +228,13 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		// ✅ Vérifier si rejoint
+		// Vérifier si rejoint (créateur auto-rejoint)
 		var count int
 		db.QueryRow(`SELECT COUNT(*) FROM event_participants WHERE user_id = ? AND event_id = ?`,
 			userID, e.ID).Scan(&count)
-		e.UserJoined = count > 0
+		e.UserJoined = count > 0 || e.CreatedBy == userID // ✅ AJOUT ICI
 
-		// 🟢 Copie UTC pour JSON de la carte
+		//  Copie UTC pour JSON de la carte
 		eForMap := e
 		eForMap.StartDatetime = e.StartDatetime.UTC()
 		if eForMap.EndDatetime != nil {
@@ -240,7 +243,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		availableEventsForMap = append(availableEventsForMap, eForMap)
 
-		// 🟡 Conversion France pour HTML
+		//  Conversion France pour HTML
 		e.StartDatetime = e.StartDatetime.In(locParis)
 		e.FormattedStart = e.StartDatetime.Format("le 02/01/2006 à 15:04")
 
@@ -254,11 +257,11 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("✅ Total événements: %d", len(availableEvents))
 
-	// 🟢 Filtrage par préférence
+	//  Filtrage par préférence
 	availableEventsFilter := utils.FilterPreference(availableEvents, userLat, userLon, pref)
 	log.Printf("✅ Événements après filtre: %d", len(availableEventsFilter))
 
-	// 🟢 JSON avec les données UTC pour la carte
+	//  JSON avec les données UTC pour la carte
 	eventsJSON, err := json.Marshal(availableEventsForMap)
 	if err != nil {
 		log.Printf("❌ Erreur marshaling JSON: %v", err)
@@ -271,11 +274,12 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ---------------------------
-	// TEMPLATE
+	//  TEMPLATE
 	// ---------------------------
 	data := struct {
 		ActivePage      string
 		UserID          int
+		CurrentUserID   int
 		UserEvents      []models.Event
 		AvailableEvents []models.Event
 		Latitude        float64
@@ -284,6 +288,7 @@ func RideUpHandler(w http.ResponseWriter, r *http.Request) {
 	}{
 		ActivePage:      "RideUp",
 		UserID:          userID,
+		CurrentUserID:   userID,
 		UserEvents:      userEvents,
 		AvailableEvents: availableEventsFilter,
 		Latitude:        userLat,
