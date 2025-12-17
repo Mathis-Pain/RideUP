@@ -1,12 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
   const mapDiv = document.getElementById("map");
+  // dataset est l’API native du DOM qui permet d'accéder aux attributs HTML commençant par data-
   const lat = parseFloat(mapDiv.dataset.lat) || 48.8566;
   const lon = parseFloat(mapDiv.dataset.lon) || 2.3522;
   const currentUserId = parseInt(mapDiv.dataset.userId);
 
-  // initilalisation de la map coordonée et zoom
+  // initilalisation de la map coordonée et zoom lier à un élément HTML (un div id="map")
   const map = L.map("map").setView([lat, lon], 8);
-
+  //   L est l’objet global de la librairie Leaflet. || (L.map() → créer une carte ||  L.marker() → créer un marqueur
+  // L.icon() → créer une icône personnalisée || L.tileLayer() → afficher les tuiles (fond de carte) || L.latLng() → créer une position)
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution: "&copy; OpenStreetMap contributors",
@@ -14,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   L.marker([lat, lon]).addTo(map).bindPopup("📍 Votre position").openPopup();
 
-  //  STOCKAGE DES MARQUEURS POUR Y ACCÉDER PLUS TARD
+  //  stockage des marqueurs pour y acceder plus tard
   const markers = {};
 
   try {
@@ -22,6 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const eventsData = mapDiv.dataset.events;
 
     if (eventsData) {
+      // transformer le eventsData string en object [{ latitude: 48, longitude: 2 }]
+
       const events = JSON.parse(eventsData);
 
       events.forEach((event) => {
@@ -41,15 +45,16 @@ document.addEventListener("DOMContentLoaded", () => {
             icon: L.icon({
               iconUrl: iconUrl,
               iconSize: [25, 41],
-              iconAnchor: [12, 41],
-              popupAnchor: [1, -34],
+              iconAnchor: [12, 41], // point précis de l’icône qui touche le sol
+              popupAnchor: [1, -34], // position du popup par rapport à l’icône
+
               shadowUrl:
                 "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
               shadowSize: [41, 41],
             }),
           }).addTo(map);
 
-          // STOCKE LE MARQUEUR AVEC L'ID DE L'ÉVÉNEMENT
+          //  STOCKE LE MARQUEUR AVEC L'ID DE L'ÉVÉNEMENT
           markers[event.id] = marker;
 
           let formattedStart = "Non défini";
@@ -107,10 +112,11 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("❌ Erreur lors du parsing des events:", error);
   }
 
-  // ✅ NOUVELLE FONCTIONNALITÉ : CLIC SUR UNE CARD
+  // evenement clique sur une card
   document.querySelectorAll(".card").forEach((card) => {
     card.addEventListener("click", (e) => {
-      // Ignore le clic si c'est un bouton
+      // Ignore le clic si c'est un bouton dans la card
+      // pour le clique soit uniquement sur la card et pas sur un bouton de la card
       if (
         e.target.classList.contains("join-btn") ||
         e.target.classList.contains("delete-btn") ||
@@ -120,27 +126,25 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const eventId = parseInt(card.dataset.eventId);
+      // 🔥 il manquait la récupération des valeurs !
+      const eventId = card.dataset.eventId;
       const cardLat = parseFloat(card.dataset.lat);
       const cardLon = parseFloat(card.dataset.lon);
 
-      console.log(
-        `🎯 Card cliquée: Event ${eventId} à [${cardLat}, ${cardLon}]`
-      );
-
       if (markers[eventId] && !isNaN(cardLat) && !isNaN(cardLon)) {
-        // ✅ CENTRE LA CARTE AVEC OFFSET (pour ne pas cacher le marqueur sous la popup)
+        // centre la map avec offset (pour ne pas cacher le marqueur sous la popup)
+        //map.setView methode de leaflet pour centrer la map
         map.setView([cardLat, cardLon], 16, {
           animate: true,
           duration: 0.5,
         });
 
-        // ✅ OUVRE LA POPUP APRÈS UN LÉGER DÉLAI (pour que le centrage soit visible)
+        // met un délai pour ouvrir la pop up
         setTimeout(() => {
           markers[eventId].openPopup();
         }, 300);
 
-        // ✅ SCROLL VERS LA CARTE (optionnel)
+        // force la page à scroller automatiquement jusqu’à ce que l’élément soit visible.
         document.getElementById("map").scrollIntoView({
           behavior: "smooth",
           block: "center",
@@ -149,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ✅ GESTION DES BOUTONS
+  // gestion des boutons
   document.addEventListener("click", async (e) => {
     if (
       e.target.classList.contains("join-btn") ||
@@ -159,9 +163,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const btn = e.target;
       const eventId = btn.dataset.eventId;
       const action = btn.textContent.trim().toLowerCase();
-      console.log("Action détectée :", action, "pour event", eventId);
 
-      // ✅ CENTRAGE SUR LA CARTE AVANT L'ACTION
+      // centrage sur la map avant l'action
       const card = btn.closest(".card");
       if (card) {
         const cardLat = parseFloat(card.dataset.lat);
