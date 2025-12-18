@@ -1,14 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
   const mapDiv = document.getElementById("map");
-  // dataset est l’API native du DOM qui permet d'accéder aux attributs HTML commençant par data-
   const lat = parseFloat(mapDiv.dataset.lat) || 48.8566;
   const lon = parseFloat(mapDiv.dataset.lon) || 2.3522;
   const currentUserId = parseInt(mapDiv.dataset.userId);
 
-  // initilalisation de la map coordonée et zoom lier à un élément HTML (un div id="map")
+  // Initialisation de la map
   const map = L.map("map").setView([lat, lon], 8);
-  //   L est l’objet global de la librairie Leaflet. || (L.map() → créer une carte ||  L.marker() → créer un marqueur
-  // L.icon() → créer une icône personnalisée || L.tileLayer() → afficher les tuiles (fond de carte) || L.latLng() → créer une position)
+
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution: "&copy; OpenStreetMap contributors",
@@ -16,19 +14,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   L.marker([lat, lon]).addTo(map).bindPopup("📍 Votre position").openPopup();
 
-  //  stockage des marqueurs pour y acceder plus tard
+  // Stockage des marqueurs
   const markers = {};
 
   try {
-    // dataset genere automatiquement par le navigateur data-events → dataset.event
     const eventsData = mapDiv.dataset.events;
+    console.log("🔍 Data brute:", eventsData);
 
     if (eventsData) {
-      // transformer le eventsData string en object [{ latitude: 48, longitude: 2 }]
-
+      // 🔥 CETTE LIGNE ÉTAIT MANQUANTE !
       const events = JSON.parse(eventsData);
+      console.log("✅ Events parsés:", events);
+      console.log("📊 Nombre d'events:", events.length);
 
       events.forEach((event) => {
+        console.log("📌 Traitement event:", event.id, event.title);
+
         if (event.latitude && event.longitude) {
           let iconColor;
           if (event.created_by === currentUserId) {
@@ -45,54 +46,88 @@ document.addEventListener("DOMContentLoaded", () => {
             icon: L.icon({
               iconUrl: iconUrl,
               iconSize: [25, 41],
-              iconAnchor: [12, 41], // point précis de l’icône qui touche le sol
-              popupAnchor: [1, -34], // position du popup par rapport à l’icône
-
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
               shadowUrl:
                 "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
               shadowSize: [41, 41],
             }),
           }).addTo(map);
 
-          //  STOCKE LE MARQUEUR AVEC L'ID DE L'ÉVÉNEMENT
+          // Stocke le marqueur
           markers[event.id] = marker;
 
+          // 🔥 FORMATAGE DE LA DATE
           let formattedStart = "Non défini";
-          if (event.start_time) {
-            const date = new Date(event.start_time);
-            formattedStart = date.toLocaleString("fr-FR", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            });
+          if (event.start_datetime) {
+            try {
+              const date = new Date(event.start_datetime);
+              if (!isNaN(date.getTime())) {
+                formattedStart = date.toLocaleString("fr-FR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+                console.log("✅ Date formatée:", formattedStart);
+              } else {
+                console.error("❌ Date invalide pour event", event.id);
+              }
+            } catch (error) {
+              console.error("❌ Erreur formatage date:", error);
+            }
           }
 
+          // 🔥 CONSTRUCTION DE LA POPUP
           let popupContent = `
             <div style="max-width: 300px;">
               <h3 style="margin: 0 0 10px 0; color: #333;">${event.title}</h3>
               <p style="margin: 5px 0;"><strong>📅 Date :</strong> ${formattedStart}</p>
-              <p style="margin: 5px 0;"><strong>📍 Lieu :</strong> ${event.address}</p>
-              <p style="margin: 5px 0;"><strong>👤 Organisateur :</strong> ${event.creator_name}</p>
+              <p style="margin: 5px 0;"><strong>📍 Lieu :</strong> ${
+                event.address || "Non défini"
+              }</p>
+              <p style="margin: 5px 0;"><strong>👤 Organisateur :</strong> ${
+                event.creator_name || "Inconnu"
+              }</p>
           `;
 
           if (event.description) {
             popupContent += `<p style="margin: 10px 0 5px 0;"><strong>Description :</strong></p><p style="margin: 0;">${event.description}</p>`;
           }
 
-          popupContent += `<p style="margin: 10px 0 5px 0;"><strong>👥 Participants :</strong> ${event.participants}</p>`;
+          popupContent += `<p style="margin: 10px 0 5px 0;"><strong>👥 Participants :</strong> ${
+            event.participants || 0
+          }</p>`;
 
-          if (event.created_by !== currentUserId) {
-            const buttonText = event.user_joined ? "QUITTER" : "REJOINDRE";
-            const buttonClass = event.user_joined ? "joined" : "";
+          // Boutons rejoindre/quitter/supprimer
+          if (event.created_by === currentUserId) {
             popupContent += `
-              <button class="join-btn-popup ${buttonClass}" data-event-id="${
-              event.id
-            }" style="
+              <button class="delete-btn" data-event-id="${event.id}" style="
                 margin-top: 10px;
                 padding: 8px 16px;
-                background-color: ${event.user_joined ? "#dc3545" : "#007bff"};
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+              ">🗑️ SUPPRIMER</button>
+            `;
+          } else {
+            const buttonText = event.user_joined
+              ? "❌ QUITTER"
+              : "✅ REJOINDRE";
+            const buttonColor = event.user_joined ? "#dc3545" : "#007bff";
+
+            popupContent += `
+              <button class="join-btn-popup ${
+                event.user_joined ? "joined" : ""
+              }" 
+                      data-event-id="${event.id}" style="
+                margin-top: 10px;
+                padding: 8px 16px;
+                background-color: ${buttonColor};
                 color: white;
                 border: none;
                 border-radius: 4px;
@@ -105,18 +140,23 @@ document.addEventListener("DOMContentLoaded", () => {
           popupContent += `</div>`;
 
           marker.bindPopup(popupContent);
+          console.log("✅ Marqueur créé pour event", event.id);
+        } else {
+          console.warn("⚠️ Event sans coordonnées:", event.id);
         }
       });
+
+      console.log("✅ Total marqueurs créés:", Object.keys(markers).length);
+    } else {
+      console.warn("⚠️ Aucune donnée d'événements");
     }
   } catch (error) {
     console.error("❌ Erreur lors du parsing des events:", error);
   }
 
-  // evenement clique sur une card
+  // Événement clic sur une card
   document.querySelectorAll(".card").forEach((card) => {
     card.addEventListener("click", (e) => {
-      // Ignore le clic si c'est un bouton dans la card
-      // pour le clique soit uniquement sur la card et pas sur un bouton de la card
       if (
         e.target.classList.contains("join-btn") ||
         e.target.classList.contains("delete-btn") ||
@@ -126,34 +166,33 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // 🔥 il manquait la récupération des valeurs !
       const eventId = card.dataset.eventId;
       const cardLat = parseFloat(card.dataset.lat);
       const cardLon = parseFloat(card.dataset.lon);
 
+      console.log("🎯 Clic sur card:", eventId, cardLat, cardLon);
+
       if (markers[eventId] && !isNaN(cardLat) && !isNaN(cardLon)) {
-        // centre la map avec offset (pour ne pas cacher le marqueur sous la popup)
-        //map.setView methode de leaflet pour centrer la map
         map.setView([cardLat, cardLon], 16, {
           animate: true,
           duration: 0.5,
         });
 
-        // met un délai pour ouvrir la pop up
         setTimeout(() => {
           markers[eventId].openPopup();
         }, 300);
 
-        // force la page à scroller automatiquement jusqu’à ce que l’élément soit visible.
         document.getElementById("map").scrollIntoView({
           behavior: "smooth",
           block: "center",
         });
+      } else {
+        console.error("❌ Marqueur introuvable:", eventId);
       }
     });
   });
 
-  // gestion des boutons
+  // Gestion des boutons
   document.addEventListener("click", async (e) => {
     if (
       e.target.classList.contains("join-btn") ||
@@ -164,7 +203,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const eventId = btn.dataset.eventId;
       const action = btn.textContent.trim().toLowerCase();
 
-      // centrage sur la map avant l'action
+      console.log("🔘 Clic bouton:", action, "Event:", eventId);
+
+      // Centrage sur la map avant l'action
       const card = btn.closest(".card");
       if (card) {
         const cardLat = parseFloat(card.dataset.lat);
@@ -220,11 +261,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!response.ok) throw new Error("Erreur serveur");
         const data = await response.json();
-        console.log("Réponse serveur :", data);
+        console.log("✅ Réponse serveur:", data);
 
         window.location.href = "/RideUp";
       } catch (err) {
-        console.error("Erreur :", err);
+        console.error("❌ Erreur:", err);
         alert("Une erreur est survenue, veuillez réessayer.");
       }
     }
