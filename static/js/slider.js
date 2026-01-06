@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   const mapDiv = document.getElementById("map");
 
-  // Position par défaut : si backend n'envoie rien, fallback sur Lyon
+  // Position par défaut : si backend n'envoie rien, fallback sur Rouen
   let lat = parseFloat(mapDiv.dataset.lat);
   let lon = parseFloat(mapDiv.dataset.lon);
   if (isNaN(lat)) lat = 48.8566;
