@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("🔍 Data brute:", eventsData);
 
     if (eventsData) {
-      // 🔥 CETTE LIGNE ÉTAIT MANQUANTE !
       const events = JSON.parse(eventsData);
       console.log("✅ Events parsés:", events);
       console.log("📊 Nombre d'events:", events.length);

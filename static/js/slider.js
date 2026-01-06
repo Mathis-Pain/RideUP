@@ -4,8 +4,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // Position par défaut : si backend n'envoie rien, fallback sur Lyon
   let lat = parseFloat(mapDiv.dataset.lat);
   let lon = parseFloat(mapDiv.dataset.lon);
-  if (isNaN(lat)) lat = 45.764043;
-  if (isNaN(lon)) lon = 4.835659;
+  if (isNaN(lat)) lat = 48.8566;
+  if (isNaN(lon)) lon = 2.3522;
 
   const map = L.map("map").setView([lat, lon], 13);
 
@@ -15,14 +15,14 @@ document.addEventListener("DOMContentLoaded", function () {
   }).addTo(map);
 
   // Marqueur de l'utilisateur
-  const userMarker = L.marker([lat, lon], { draggable: true })
+  const userMarker = L.marker([lat, lon], {draggable: true})
     .addTo(map)
     .bindPopup("📍 Votre position")
     .openPopup();
 
   // Cercle de rayon autour de l'utilisateur
   let radius = parseInt(document.getElementById("radius").value) * 1000;
-  const circle = L.circle([lat, lon], { radius }).addTo(map);
+  const circle = L.circle([lat, lon], {radius}).addTo(map);
 
   // Mettre à jour les champs cachés
   document.getElementById("latitude").value = lat.toFixed(6);
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?lat=${pos.lat}&lon=${pos.lng}&format=json&addressdetails=1&zoom=18`,
-        { headers: { "User-Agent": "RideUP/1.0 (moto-event-app)" } }
+        {headers: {"User-Agent": "RideUP/1.0 (moto-event-app)"}}
       );
       if (!response.ok) throw new Error("Erreur HTTP: " + response.status);
 
