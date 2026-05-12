@@ -5,88 +5,84 @@
     {{template "InitNav" .}}
 
     <main class="main-rideup">
-      <!-- Colonne gauche : sorties de l'utilisateur -->
-      <section class="user-events">
-        <h2>Mes sorties</h2>
-        <div class="cards-container">
-          {{range .UserEvents}}
-          <div class="card">
-            <div class="title-creatorname">
-              <h3>{{.Title}}</h3>
-              <p class="creatorname">{{.CreatorName}}</p>
-            </div>
+      <!-- Carte unique -->
+      <div
+        id="map"
+        data-lat="{{.Latitude}}"
+        data-lon="{{.Longitude}}"
+        data-events="{{.EventsJSON}}"
+        data-user-id="{{.UserID}}"
+      ></div>
 
-            <p><strong>Date :</strong>{{.FormattedStart}}</p>
-            <p>
-              <strong>Lieu :</strong>
-              {{.Address}}
-            </p>
-            {{if .Description.Valid}}
-            <p>{{.Description.String}}</p>
-            {{end}}
-           <div class="btn-participants">
-            <button class="join-btn" data-event-id="{{.ID}}">SUPPRIMER</button>
-            <span class="user-participants">
-              <img
-                src="/static/images/icone-participant.png"
-                class="image-participants"
-                alt="petit icone pour symboliser les participants"
-              />
-              {{if .Participants.Valid}}{{.Participants.Int64}}{{else}}0{{end}}
-            </span>
-          </div>
-          </div>
-          </div>
-          {{else}}
-          <p>Aucune sortie créée pour le moment.</p>
-          {{end}}
-        </div>
-     
-      </section>
+      <div class="section-event-list">
+        <section class="user-events">
+          <h2>Liste des sorties :</h2>
 
-      <!-- Colonne droite : sorties disponibles -->
-      <section class="available-events">
-        <h2>Sorties disponibles</h2>
-        <div class="cards-container">
-          {{range .AvailableEvents}}
-          <div class="card">
-            <div class="title-creatorname">
-              <h3>{{.Title}}</h3>
-              <p class="creatorname">{{.CreatorName}}</p>
-            </div>
-            <p><strong>Date :</strong>{{.FormattedStart}}</p>
-            <p>
-              <strong>Lieu :</strong>
-              {{.Address}}
-            </p>
-            {{if .Description.Valid}}
-            <p>{{.Description.String}}</p>
-            {{end}}
-            <div class="btn-participants">
-              <button class="join-btn" data-event-id="{{.ID}}">
-                {{if .UserJoined}}Annuler{{else}}Rejoindre{{end}}
-              </button>
-              <span class="participants">
-                <img
-                  src="/static/images/icone-participant.png"
-                  class="image-participants"
-                  alt="petit icone pour symboliser les participants"
-                />
-                {{if
-                .Participants.Valid}}{{.Participants.Int64}}{{else}}0{{end}}
-              </span>
+          <div class="cards-container">
+            {{range .AvailableEvents}}
+            <div
+              class="card {{if eq .CreatedBy $.UserID}}my-event{{else}}other-event{{end}}"
+              data-event-id="{{.ID}}"
+              data-lat="{{.Latitude}}"
+              data-lon="{{.Longitude}}"
+            >
+              <div class="title-creatorname">
+                <h3>{{.Title}}</h3>
+                <p class="creatorname">
+                  {{if eq .CreatedBy $.UserID}}
+                  <img
+                    src="/static/images/icone-participant-vert.png"
+                    class="image-participants"
+                    alt="icône participants"
+                  />{{end}} {{.CreatorName}}
+                </p>
+              </div>
+
+              <p><strong>Date :</strong> {{.FormattedStart}}</p>
+              <p><strong>Lieu :</strong> {{.Address}}</p>
+
+              {{if .Description.Valid}}
+              <p>{{.Description.String}}</p>
+              {{end}}
+
+              <div class="btn-participants">
+                <!-- Si c'est VOTRE événement -->
+                {{if eq .CreatedBy $.UserID}}
+                <button class="delete-btn" data-event-id="{{.ID}}">
+                  🗑️ SUPPRIMER
+                </button>
+
+                <!-- Si c'est un événement des AUTRES -->
+                {{else}}
+                <button
+                  class="join-btn {{if .UserJoined}}joined{{end}}"
+                  data-event-id="{{.ID}}"
+                >
+                  {{if .UserJoined}} QUITTER{{else}} REJOINDRE{{end}}
+                </button>
+                {{end}}
+
+                <span class="user-participants">
+                  <img
+                    src="/static/images/icone-participant.png"
+                    class="image-participants"
+                    alt="icône participants"
+                  />
+                  {{.Participants}}
+                </span>
               </div>
             </div>
+            {{else}}
+            <p>Aucune sortie disponible pour le moment.</p>
+            {{end}}
           </div>
-          {{else}}
-          <p>Aucune sortie disponible actuellement.</p>
-          {{end}}
-        </div>
-      </section>
+        </section>
+      </div>
     </main>
 
     {{template "InitFooter" .}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <script src="/static/js/rideup.js" defer></script>
-      <script src="/static/js/nav.js"></script>
+    <script src="/static/js/nav.js"></script>
   </body>
 </html>
