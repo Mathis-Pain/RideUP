@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
           let popupContent = `
             <div style="max-width: 300px;">
               <h3 style="margin: 0 0 10px 0; color: #333;">${event.title}</h3>
-              <p style="margin: 5px 0;"><strong>📅 Date :</strong> ${formattedStart}</p>
+              <p style="margin: 5px 0;"><strong>📅< Date :</strong> ${formattedStart}</p>
               <p style="margin: 5px 0;"><strong>📍 Lieu :</strong> ${
                 event.address || "Non défini"
               }</p>
@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("❌ Erreur lors du parsing des events:", error);
   }
 
-  // Événement clic sur une card
+  // Événement clic sur une card (centrage sur le marker)
   document.querySelectorAll(".card").forEach((card) => {
     card.addEventListener("click", (e) => {
       if (

@@ -1,2 +1,3 @@
 external.env
+.env
 data/RideUp.db

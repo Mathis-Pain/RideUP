@@ -21,10 +21,7 @@ var GoogleOauthConfig *oauth2.Config
 // Cette fonction charge les identifiants depuis le fichier external.env
 func InitGoogleOAuth() {
 	// Chargement des variables d'environnement
-	err := loadEnv("./external.env")
-	if err != nil {
-		fmt.Print("ERREUR : <google.go> Impossible d'ouvrir le fichier env. Vérifiez que le fichier existe", err)
-	}
+	loadEnv("./external.env")
 	// Configuration du client OAuth avec les identifiants Google
 	GoogleOauthConfig = &oauth2.Config{
 		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),

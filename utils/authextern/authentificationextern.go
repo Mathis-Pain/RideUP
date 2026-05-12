@@ -12,6 +12,9 @@ import (
 func loadEnv(filename string) error {
 	file, err := os.Open(filename)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
 		fmt.Printf("ERREUR : <authentificationextern.go> Erreur à l'ouverture du fichier %s : %v", filename, err)
 		return err
 	}
