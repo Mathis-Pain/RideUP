@@ -18,15 +18,11 @@ import (
 var GoogleOauthConfig *oauth2.Config
 
 // InitGoogleOAuth initialise la configuration OAuth de Google
-// Cette fonction charge les identifiants depuis le fichier external.env
 func InitGoogleOAuth() {
-	// Chargement des variables d'environnement
-	loadEnv("./external.env")
-	// Configuration du client OAuth avec les identifiants Google
 	GoogleOauthConfig = &oauth2.Config{
 		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
 		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
-		RedirectURL:  "http://localhost:5090/auth/google/callback", // URL de redirection après autorisation
+		RedirectURL:  os.Getenv("GOOGLE_REDIRECT_URL"),
 		Scopes: []string{
 			"https://www.googleapis.com/auth/userinfo.email",   // Permission pour accéder à l'email
 			"https://www.googleapis.com/auth/userinfo.profile", // Permission pour accéder au profil (nom, photo)
@@ -63,7 +59,14 @@ func HandleGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ÉTAPE 3 : Récupération des informations utilisateur via l'API Google
-	resp, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://www.googleapis.com/oauth2/v2/userinfo", nil)
+	if err != nil {
+		fmt.Print("ERREUR : <google.go> Impossible de créer la requête userinfo : ", err)
+		utils.InternalServError(w)
+		return
+	}
+	req.Header.Set("Authorization", "Bearer "+token.AccessToken)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		fmt.Print("ERREUR : <google.go> Impossible de récupérer les données de l'utilisateur : ", err)
 		utils.InternalServError(w)
